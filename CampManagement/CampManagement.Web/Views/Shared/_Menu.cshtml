@@ -1,0 +1,101 @@
+﻿<style>
+.nav > li > a > i {
+   height: 18px;
+}
+</style>
+<ul class="nav">
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
+    {
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Racks" ? "active" : "")">
+        <a href="@Url.Action("Create", "Racks", new { id = "" })">
+            <b class="badge bg-danger pull-right" id="racksMissingPocket"></b>
+            <i class="fa fa-th"></i>
+            <span>Racks</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Magazines" ? "active" : "")">
+        <a href="@Url.Action("Create", "Magazines", new { id = "" })">
+            <i class="fa fa-book"></i>
+            <span>Magazines</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Customers" ? "active" : "")">
+        <a href="@Url.Action("Create", "Customers", new { id = "" })">
+            <i class="fa fa-briefcase"></i>
+            <span>Customers</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Supermarkets" ? "active" : "")">
+        <a href="@Url.Action("Create", "Supermarkets", new { id = "" })">
+            <b class="badge bg-danger pull-right" id="supermarketsNoRoute"></b>
+            <i class="fa fa-shopping-cart"></i>
+            <span>Supermarkets</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Drivers" ? "active" : "")">
+        <a href="@Url.Action("Create", "Drivers", new { id = "" })">
+            <i class="fa fa-truck"></i>
+            <span>Drivers</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Categories" ? "active" : "")">
+        <a href="@Url.Action("Create", "Categories", new { id = "" })">
+            <i class="fa fa-puzzle-piece"></i>
+            <span>Categories</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Account" ? "active" : "")">
+        <a href="@Url.Action("Register", "Account", new { id = "" })">
+            <i class="fa fa-users"></i>
+            <span>Users</span>
+        </a>
+    </li>
+    <li class="dropdown-submenu active">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-bar-chart-o"></i>
+            <span>Reports</span>
+        </a>
+        <ul class="dropdown-menu">            
+            <li>
+                <a href="@Url.Action("Add","Reports")">Pockets to add</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Remove","Reports")">Pockets to remove</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Available","Reports")">Pockets available</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Schematic","Reports")">Schematic</a>
+            </li>
+            <li>
+                <a href="@Url.Action("CustomerDetail","Reports")">Customer Detail</a>
+            </li>
+            <li>
+                <a href="@Url.Action("DefaultExport","Reports")">Default Export</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Invoice","Reports")">Invoice</a>
+            </li>
+        </ul>
+    </li>
+    }
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Driver"))
+    {
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Racks" ? "active" : "")">
+            <a href="@Url.Action("MyRacks", "Racks", new { id = "" })">
+                <i class="fa fa-random"></i>
+                <span>My Routes</span>
+            </a>
+        </li>
+    }
+    @if (User.Identity.IsAuthenticated && User.IsInRole("BViewer"))
+    {
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Billboards" ? "active" : "")">
+            <a href="@Url.Action("Availability", "Billboards", new { id = "" })">
+                <i class="fa fa-bell-o"></i>
+                <span>Billboards</span>
+            </a>
+        </li>
+    }
+</ul>

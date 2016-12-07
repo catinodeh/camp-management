@@ -2,90 +2,86 @@
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Authentication
 @model LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
-
 @{
-    ViewData["Title"] = "Log in";
+    ViewBag.Title = "Log in";
+    Layout = null;
 }
-
-<h2>@ViewData["Title"].</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section>
-            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Email" class="col-md-2 control-label"></label>
-                    <div class="col-md-10">
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="col-md-2 control-label"></label>
-                    <div class="col-md-10">
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Camp Management | Login</title>
+    <meta name="description" content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/animate.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font.css")" type="text/css" cache="false" />
+    <link rel="stylesheet" href="@Url.Content("~/css/plugin.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/app.css")" type="text/css" />
+    <!--[if lt IE 9]>
+      <script src="@Url.Content("~/js/ie/respond.min.js")" cache="false"></script>
+      <script src="@Url.Content("~/js/ie/html5.js")" cache="false"></script>
+      <script src="@Url.Content("~/js/ie/fix.js")" cache="false"></script>
+    <![endif]-->
+</head>
+<body>
+    <section id="content" class="m-t-lg wrapper-md animated fadeInUp">
+        <a class="nav-brand" href="#">New Life</a>
+        <div class="row m-n">
+            <div class="col-md-4 col-md-offset-4 m-t-lg">
+                <section class="panel">
+                    <header class="panel-heading text-center">
+                        Sign in
+                    </header>
+                    <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="panel-body" role="form">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password" class="control-label"></label>
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
                         <div class="checkbox">
-                            <label asp-for="RememberMe">
-                                <input asp-for="RememberMe" />
-                                @Html.DisplayNameFor(m => m.RememberMe)
+                            <label>
+                                @Html.CheckBoxFor(m => m.RememberMe) Keep me logged in
                             </label>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <button type="submit" class="btn btn-default">Log in</button>
-                    </div>
-                </div>
-                <p>
-                    <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
-                </p>
-                <p>
-                    <a asp-action="ForgotPassword">Forgot your password?</a>
-                </p>
-            </form>
-        </section>
-    </div>
-    <div class="col-md-4">
-        <section>
-            <h4>Use another service to log in.</h4>
-            <hr />
-            @{
-                var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
-                if (loginProviders.Count == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
-                            for details on setting up this ASP.NET application to support logging in via external services.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in loginProviders)
-                                {
-                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">@provider.AuthenticationScheme</button>
-                                }
-                            </p>
+                        <div class="form-group">
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn btn-info">Sign in</button>
+                            </div>
+                            <div class="col-lg-10">
+                                @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account", null, new { @class = "pull-right m-t-xs" })
+                            </div>
                         </div>
                     </form>
-                }
-            }
-        </section>
-    </div>
-</div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <!-- footer -->
+    <footer id="footer">
+        <div class="text-center padder clearfix">
+            <p>
+                <small>All Rights Reserved<br>&copy; 2016</small>
+            </p>
+        </div>
+    </footer>
+    <!-- / footer -->
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <!-- Bootstrap -->
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.js")"></script>
+    <!-- app -->
+    <script src="@Url.Content("~/js/app.js")"></script>
+    <script src="@Url.Content("~/js/app.plugin.js")"></script>
+    <script src="@Url.Content("~/js/app.data.js")"></script>
+</body>
+</html>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

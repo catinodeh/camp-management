@@ -13,6 +13,7 @@ namespace CampManagement.Web.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            //disable initializer
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
