@@ -760,7 +760,7 @@ html.layout-box .vbox > footer {
   text-decoration: none;
 }
 .nav-brand img {
-  max-height: 20px;
+  max-height: 40px;
   margin-top: -7px;
   vertical-align: middle;
 }
