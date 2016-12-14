@@ -1,30 +1,31 @@
-﻿@model VerifyPhoneNumberViewModel
+﻿@model CampManagement.Web.Models.VerifyPhoneNumberViewModel
 @{
-    ViewData["Title"] = "Verify Phone Number";
+    ViewBag.Title = "Verify Phone Number";
 }
 
-<h2>@ViewData["Title"].</h2>
+<h2>@ViewBag.Title.</h2>
 
-<form asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    <input asp-for="PhoneNumber" type="hidden" />
-    <h4>Add a phone number.</h4>
-    <h5>@ViewData["Status"]</h5>
+@using (Html.BeginForm("VerifyPhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("phoneNumber", @Model.PhoneNumber)
+    <h4>Enter verification code</h4>
+    <h5>@ViewBag.Status</h5>
     <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
+    @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
-        <label asp-for="Code" class="col-md-2 control-label"></label>
+        @Html.LabelFor(m => m.Code, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            <input asp-for="Code" class="form-control" />
-            <span asp-validation-for="Code" class="text-danger"></span>
+            @Html.TextBoxFor(m => m.Code, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Submit</button>
+            <input type="submit" class="btn btn-default" value="Submit" />
         </div>
     </div>
-</form>
+}
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @Scripts.Render("~/bundles/jqueryval")
 }

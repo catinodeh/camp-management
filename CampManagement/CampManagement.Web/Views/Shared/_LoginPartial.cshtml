@@ -1,27 +1,22 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using CampManagement.Web.Models
-
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
-
-@if (SignInManager.IsSignedIn(User))
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
 {
-    <a href="#" class="dropdown-toggle dker" data-toggle="dropdown">
-        <span class="thumb-sm avatar pull-left m-t-n-xs m-r-xs">
-            <img src="@Url.Content("~/images/avatar_default.jpg")">
-        </span>
-        @UserManager.GetUserName(User) <b class="caret"></b>
-    </a>
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-        @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
+
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+        </li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+    </ul>
     }
-    <ul class="dropdown-menu animated fadeInLeft">
-        <li>
-            @Html.ActionLink("Change Password", "ChangePassword", "Manage")
-        </li>
-        <li>
-            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
-        </li>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

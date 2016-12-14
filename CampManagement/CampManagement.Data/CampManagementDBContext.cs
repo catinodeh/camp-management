@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using CampManagement.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampManagement.Data
 {
     public class CampManagementDbContext : DbContext
     {
-        public CampManagementDbContext(string connString) : base(connString)
+        public CampManagementDbContext(DbContextOptions<CampManagementDbContext> options)
+            : base(options)
         {
-            Database.SetInitializer<CampManagementDbContext>(null);
         }
 
         public DbSet<Camp> Camps { get; set; }
