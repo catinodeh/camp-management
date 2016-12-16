@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CampManagement.Domain.Entities.CampSetup>
 
 @{
-    ViewBag.Title = "Managing Camp " + ViewData["CampName"];
+    ViewBag.Title = ViewData["CampName"];
     Layout = "~/Views/Shared/_Layout.cshtml";
     bool[] firsts = new []{ true, true };
 }
