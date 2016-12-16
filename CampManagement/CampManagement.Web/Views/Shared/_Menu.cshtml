@@ -1,0 +1,17 @@
+﻿<style>
+.nav > li > a > i {
+   height: 18px;
+}
+</style>
+<ul class="nav">
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrators"))
+    {
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" ? "active" : "")">
+        <a href="@Url.Action("Create", "Camps", new { id = "" })">
+            <b class="badge bg-danger pull-right" id="racksMissingPocket"></b>
+            <i class="fa fa-th"></i>
+            <span>Camps</span>
+        </a>
+    </li>
+    }
+</ul>

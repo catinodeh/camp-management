@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CampManagement.Domain.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using CampManagement.Web.Models;
 
 namespace CampManagement.Web.Controllers
 {

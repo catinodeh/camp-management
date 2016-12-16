@@ -1,0 +1,49 @@
+﻿@model IEnumerable<CampManagement.Domain.Entities.CampSetup>
+
+@{
+    ViewBag.Title = "Managing Camp " + ViewData["CampName"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool[] firsts = new []{ true, true };
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <section class="panel">
+            <header class="panel-heading bg-light">
+                <ul class="nav nav-tabs nav-justified">
+                    @if (!Model.Any(cs => cs.Year == DateTime.Now.Year)) { 
+                        <li class="active">
+                            <a href="#cs_@DateTime.Now.Year" data-toggle="tab">@DateTime.Now.Year</a>
+                        </li> 
+                    }
+
+                    @foreach (var campSetup in Model)
+                    {                        
+                        <li class="@(firsts[0] ? "active" : "")">
+                            <a href="#cs_@campSetup.Year" data-toggle="tab">@campSetup.Year</a>
+                        </li>
+                        firsts[0] = false;
+                    }
+                </ul>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content">
+                    @if (!Model.Any(cs => cs.Year == DateTime.Now.Year))
+                    {
+                        <div class="tab-pane active" id="cs_@DateTime.Now.Year">
+                            @{ Html.RenderAction("Create", "CampSetups", Model.FirstOrDefault(cs => cs.Year == DateTime.Now.Year)); }
+                        </div>
+                    }
+                    
+                    @foreach (var campSetup in Model)
+                    {
+                        <div class="tab-pane @(firsts[1] ? "active" : "")" id="cs_@campSetup.Year">                            
+                            @{ Html.RenderAction("Create", "CampSetups", campSetup); }
+                        </div>
+                        firsts[1] = false;
+                    }
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
