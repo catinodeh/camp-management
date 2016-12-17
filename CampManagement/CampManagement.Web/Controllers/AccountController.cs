@@ -5,10 +5,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CampManagement.Data;
 using CampManagement.Domain.Identity;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace CampManagement.Web.Controllers
 {
@@ -136,40 +139,121 @@ namespace CampManagement.Web.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
-        public ActionResult Register()
+        public ActionResult Register(string id)
         {
-            return View();
+            using (var context = new ApplicationDbContext())
+            {
+                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                AddViewData(id);
+
+                if (!string.IsNullOrEmpty(id))
+                {
+                    return View(GetUser(id));
+                }
+
+                return View();
+            }
         }
 
-        //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        private RegisterViewModel GetUser(string id)
         {
-            if (ModelState.IsValid)
+            using (var context = new ApplicationDbContext())
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var user = context.Users.FirstOrDefault(u => u.Id == id);
+
+                return new RegisterViewModel()
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    return RedirectToAction("Index", "Home");
-                }
-                AddErrors(result);
+                    Id = user.Id,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    RoleName = UserManager.IsInRole(user.Id, "Administrators") ? "Administrators" : "Users",
+                    Active = !user.LockoutEndDateUtc.HasValue
+                };
             }
+        }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+        private void AddViewData(string id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                ViewData["users"] = context.Users
+                                    .OrderBy(u => u.UserName)
+                                    .ToList()
+                                    .Select(u => new RegisterViewModel()
+                                    {
+                                        Id = u.Id,
+                                        UserName = u.UserName,
+                                        Email = u.Email,
+                                        RoleName = UserManager.IsInRole(u.Id, "Administrators") ? "Administrators" : "Users",
+                                        Active = !u.LockoutEndDateUtc.HasValue
+                                    })
+                                    .ToList();
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Register(string id, RegisterViewModel model)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+
+                if (ModelState.IsValid)
+                {
+                    if (id != null)
+                    {
+                        var existingUser = context.Users.FirstOrDefault(u => u.Id == id);
+                        existingUser.Email = model.Email;
+                        existingUser.UserName = model.UserName;
+                        context.SaveChanges();
+                        UserManager.RemoveFromRole(id, "Administrators");
+                        UserManager.RemoveFromRole(id, "Users");
+                        UserManager.AddToRole(id, model.RoleName);
+                        existingUser.LockoutEndDateUtc = !model.Active ? DateTime.MaxValue : (DateTime?)null;
+
+                        if (model.Password != null)
+                        {
+                            var provider = new DpapiDataProtectionProvider("YourAppName");
+                            UserManager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser, string>(provider.Create("UserToken")) as IUserTokenProvider<ApplicationUser, string>;
+                            var token = await UserManager.GeneratePasswordResetTokenAsync(id);
+
+                            var result = await UserManager.ResetPasswordAsync(id, token, model.Password);
+                        }
+
+                        context.SaveChanges();
+
+                        return RedirectToAction("Register", "Account", new { id = "" });
+                    }
+                    else
+                    {
+                        var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, EmailConfirmed = true };
+                        var result = await UserManager.CreateAsync(user, model.Password);
+
+                        if (result.Succeeded)
+                        {
+                            UserManager.SetLockoutEnabled(user.Id, true);
+                            //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                            await UserManager.AddToRoleAsync(user.Id, model.RoleName);
+
+                            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                            // Send an email with this link
+                            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                            return RedirectToAction("Register", "Account");
+                        }
+                        AddErrors(result);
+                    }
+                }
+
+                // If we got this far, something failed, redisplay form
+                AddViewData(id);
+                return View(model);
+            }
         }
 
         //

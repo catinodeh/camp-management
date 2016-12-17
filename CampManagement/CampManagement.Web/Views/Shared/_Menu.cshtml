@@ -3,15 +3,56 @@
    height: 18px;
 }
 </style>
-<ul class="nav">
-    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrators"))
-    {
-    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" ? "active" : "")">
-        <a href="@Url.Action("Create", "Camps", new { id = "" })">
-            <b class="badge bg-danger pull-right" id="racksMissingPocket"></b>
-            <i class="fa fa-th"></i>
-            <span>Camps</span>
+<ul class="nav">  
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
+        <a href="@Url.Action("Index", "Home", new { id = "" })">
+            <i class="fa fa-home"></i>
+            <span>Home</span>
+        </a>
+    </li>  
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Guardians", new { id = "" })">
+            <i class="fa fa-user"></i>
+            <span>Guardians</span>
         </a>
     </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Campers" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Campers", new { id = "" })">
+            <i class="fa fa-group"></i>
+            <span>Campers</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Offers" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
+            <i class="fa fa-sitemap"></i>
+            <span>Registrations</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Payments" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
+            <i class="fa fa-dollar"></i>
+            <span>Payments</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Offers" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
+            <i class="fa fa-money"></i>
+            <span>Offers</span>
+        </a>
+    </li>
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrators"))
+    {
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" ? "active" : "")">
+            <a href="@Url.Action("Create", "Camps", new { id = "" })">
+                <i class="fa fa-calendar"></i>
+                <span>Camps</span>
+            </a>
+        </li>
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Account" ? "active" : "")">
+            <a href="@Url.Action("Register", "Account", new { id = "" })">
+                <i class="fa fa-lock"></i>
+                <span>Users</span>
+            </a>
+        </li>
     }
 </ul>
