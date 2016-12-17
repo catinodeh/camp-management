@@ -1,0 +1,36 @@
+﻿@model IEnumerable<CampManagement.Domain.Entities.ExtraActivity>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th width="150">
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th width="170"></th>
+    </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.TextBoxFor(modelItem => item.Description, new { @class = "form-control", id = "desc" + item.ActivityId })
+            </td>
+            <td>
+                @Html.TextBoxFor(modelItem => item.Price, new { @class = "form-control", id = "price" + item.ActivityId })
+            </td>
+            <td>
+                @Html.ActionLink("Save", "Edit", new { id=item.ActivityId }, new { rel = "lkSave", @class = "btn btn-info" , title = item.ActivityId })&nbsp;
+                @Html.ActionLink("Delete", "Edit", new { id = item.ActivityId }, new { rel = "lkSave", @class = "btn btn-danger", title = item.ActivityId })
+            </td>
+        </tr>
+    }
+
+</table>
+
+

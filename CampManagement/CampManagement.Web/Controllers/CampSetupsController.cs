@@ -72,7 +72,7 @@ namespace CampManagement.Web.Controllers
 
                 
                 db.SaveChanges();
-                return RedirectToAction("Edit", "Camps", new { id = campSetup.CampId});
+                //return RedirectToAction("Edit", "Camps", new { id = campSetup.CampId});
             }
 
             TempData["model"] = campSetup;

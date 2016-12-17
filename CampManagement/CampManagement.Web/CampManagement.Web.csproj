@@ -178,6 +178,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CampsController.cs" />
     <Compile Include="Controllers\CampSetupsController.cs" />
+    <Compile Include="Controllers\ExtraActivitiesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Filters\TempData.cs" />
@@ -333,6 +334,8 @@
     <Content Include="Views\Camps\Create.cshtml" />
     <Content Include="Views\CampSetups\CreateOrEdit.cshtml" />
     <Content Include="Views\CampSetups\Manage.cshtml" />
+    <Content Include="Views\ExtraActivities\Index.cshtml" />
+    <Content Include="Views\ExtraActivities\IndexReadOnly.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

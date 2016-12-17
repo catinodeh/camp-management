@@ -14,9 +14,13 @@ namespace CampManagement.Domain.Entities
         [Key]
         public int ActivityId { get; set; }
         public int CampSetupId { get; set; }
+        [Required]
+        [StringLength(5)]
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public System.DateTime UpdatedDate { get; set; }
     }
 }

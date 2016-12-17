@@ -47,3 +47,104 @@
         </section>
     </div>
 </div>
+
+<script type="text/javascript">
+    function refreshActivities(campsetupid) {
+        $.ajax({
+            url: '@Url.Action("Index", "ExtraActivities", new { id = Model.FirstOrDefault()?.CampSetupId })',
+            cache: false,
+            // url where to submit the request
+            type: "GET", // type of action POST || GET
+            success: function(data, status, xhr, dataType) {
+                $("#ea@(Model.FirstOrDefault()?.CampSetupId)").empty().html(data);
+            },
+            error: function(xhr, resp, text) {
+                console.log(xhr, resp, text);
+            }
+        });
+    }
+    $(document)
+        .ready(function () {
+            $("#frm .datepicker-input").datepicker();
+            $("#frm .datepicker-input").on('changeDate', function (ev) {
+                $(this).datepicker('hide');
+            });
+
+            $("div.tab-pane").slice(1).find("input").prop("disabled", true);
+            $("div.tab-pane").slice(1).find("button,a").hide();
+
+            $("#btnAddExtraActivity")
+                .click(function () {
+                    @if (Model == null || Model.Count() == 0 || Model.FirstOrDefault()?.CampSetupId == 0)
+                    {
+                        <text>
+                            alert('Save this setup first');
+                            return;
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            var campsetupid = @(Model.FirstOrDefault()?.CampSetupId ?? 0);
+                            $.ajax({
+                                url: '@Url.Action("Create", "ExtraActivities")/'+ campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                data: $("#frmAddExtraActivity").serialize(), // post data || get data
+                                success: function(data, status, xhr, dataType) {
+                                    if (data.Success)
+                                        refreshActivities(campsetupid);
+                                    else
+                                        alert(data.Message);
+                                },
+                                error: function(xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        </text>
+                    }
+
+                });
+
+            $("body").on("click", "a[rel='lkSave']",
+                    function(e) {
+                        e.preventDefault();
+                        var campsetupid = $(this).attr("title");
+                        if ($(this).hasClass("btn-info")) {
+                            //Saving
+                            $.ajax({
+                                url: '@Url.Action("Edit", "ExtraActivities")/' + campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                data: {
+                                    Description: $("#desc" + $(this).attr("title")).val(),
+                                    Price: $("#price" + $(this).attr("title")).val()
+                                }, // post data || get data
+                                success: function (result) {
+                                    if (result.Success)
+                                        alert("Success");
+                                    else
+                                        alert(result.Message);
+                                },
+                                error: function(xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        }
+                        else {
+                            //Removing...
+                            $.ajax({
+                                url: '@Url.Action("Delete", "ExtraActivities")/' + campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                success: function (result) {
+                                    refreshActivities(campsetupid);
+                                },
+                                error: function (xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        }
+                    });
+        });
+</script>
