@@ -183,6 +183,7 @@
     <Compile Include="Controllers\GuardiansController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\OffersController.cs" />
     <Compile Include="Filters\TempData.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -256,6 +257,7 @@
     <Content Include="lib\jquery\dist\jquery.min.js" />
     <Content Include="lib\jquery\LICENSE.txt" />
     <Content Include="lib\maskedinput\jquery.maskedinput.min.js" />
+    <Content Include="lib\moment\moment.min.js" />
     <Content Include="lib\select2\select2.css" />
     <Content Include="lib\select2\select2.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -343,6 +345,7 @@
     <Content Include="Views\ExtraActivities\IndexReadOnly.cshtml" />
     <Content Include="Views\Guardians\Manage.cshtml" />
     <Content Include="Views\Campers\Manage.cshtml" />
+    <Content Include="Views\Offers\Manage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

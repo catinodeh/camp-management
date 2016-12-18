@@ -154,8 +154,8 @@
                             { "mData": "Email" },
                             {
                                 "mData": "GuardianId",
-                                "fnRender": function(obj) {
-                                    return "<a href='@Url.Action("Manage", "Guardians", new {id = ""})/" + obj.aData.GuardianId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                                "render": function (data, type, row) {
+                                    return "<a href='@Url.Action("Manage", "Guardians", new {id = ""})/" + row.GuardianId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
                                 }
                             }
                         ]

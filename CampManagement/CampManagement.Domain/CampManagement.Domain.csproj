@@ -99,6 +99,7 @@
     <Compile Include="Entities\Camper.cs" />
     <Compile Include="Entities\CampSetup.cs" />
     <Compile Include="Entities\RegistrationCamperExtraActivities.cs" />
+    <Compile Include="Entities\User.cs" />
     <Compile Include="Exceptions\BusinessException.cs" />
     <Compile Include="Entities\ExtraActivity.cs" />
     <Compile Include="Entities\Guardian.cs" />

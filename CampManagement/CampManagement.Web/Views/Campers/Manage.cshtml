@@ -138,16 +138,16 @@
                         "aoColumns": [
                             {
                                 "mData": "FirstName",
-                                "fnRender" : function(obj) {
-                                    return obj.aData.FirstName + ' ' + obj.aData.LastName;
+                                "render": function (data, type, row) {
+                                    return row.FirstName + ' ' + row.LastName;
                                 }
                             },
                             { "mData": "Phone" },
                             { "mData": "Email" },
                             {
                                 "mData": "CamperId",
-                                "fnRender": function(obj) {
-                                    return "<a href='@Url.Action("Manage", "Campers", new {id = ""})/" + obj.aData.CamperId + "' class='btn btn-info btn-sm btn-rounded' btn-sm btn-rounded'>Edit</a>";
+                                "render": function (data, type, row) {
+                                    return "<a href='@Url.Action("Manage", "Campers", new {id = ""})/" + row.CamperId + "' class='btn btn-info btn-sm btn-rounded' btn-sm btn-rounded'>Edit</a>";
                                 }
                             }
                         ]

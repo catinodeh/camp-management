@@ -1,0 +1,164 @@
+﻿@model CampManagement.Domain.Entities.OfferEntry
+
+@{
+    ViewBag.Title = "<i class='fa fa-money'></i>&nbsp;Offer Management";
+}
+
+<div class="row">
+    <div class="col-sm-5">
+        <section class="panel">
+            <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.OfferEntryId == 0 ? "New" : "Edit") Offer</header>
+            <div class="panel-body">
+                @using (Html.BeginForm(Model == null || Model.OfferEntryId == 0 ? "Create" : "Edit", "Offers", FormMethod.Post, new { @class = "", role = "form", id = "frmOffer" }))
+                {
+                    <div class="row valign">
+                        <div class="col-xs-12"> 
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.OfferEntryId)
+                            @Html.HiddenFor(model => model.OfferId)
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+                            
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Donor's name or Anonymous" } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", placeholder = "In U$" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", placeholder = "MM/DD/" + @DateTime.Now.Year, Value = Model == null || Model.Date == default(DateTime) ? "" : Model.Date.ToString("MM/dd/yyyy") } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                                
+                                <div class="col-xs-12">
+                                    <div class="form-group">                                        
+                                        @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label" })
+                                        @Html.TextAreaFor(model => model.Notes, htmlAttributes: new { @class = "control-form" , Rows="5", style="width:100%" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        @if (Model == null || Model.OfferEntryId == 0)
+                        {
+                            <button type="submit" class="btn btn-default" id="btnCreate">
+                                <i class="fa fa-save text"></i>
+                                Create
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-success" id="btnSave">
+                                <i class="fa fa-save text"></i>
+                                Save
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-7">
+        <section class="panel">
+            <header class="panel-heading font-bold">
+                <div class="row">
+                    <div class="col-xs-2" style="padding-top: 7px">
+                        Offers from: &nbsp;        
+                    </div>
+                    <div class="col-xs-2">
+                        <select class="form-control" id="Year">
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                <option value="@DateTime.Now.AddYears(i * -1).Year">@DateTime.Now.AddYears(i * -1).Year</option>
+                            }
+                        </select>        
+                    </div>
+                </div>
+            </header>
+            <div class="table-responsive">
+                <table class="table table-striped m-b-none" data-ride="datatables" id="mytable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Added by</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+    <script>
+        var oTable = null;
+        $("#Date").datepicker();
+        $("#Date").on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        function getUrl() {
+            return '@Url.Action("GetOfferEntries", "Offers")/?year=' + $("#Year").val();    
+        }
+
+        $("#Year")
+            .change(function() {
+                oTable.ajax.url(getUrl()).load();
+            });
+
+        oTable = $("#mytable").DataTable({
+            "bProcessing": true,
+            "sAjaxSource": getUrl(),
+            "sAjaxDataProp": "",
+            "sDom": "<'row'<'col-xs-5'l><'col-xs-7'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+            "sPaginationType": "full_numbers",
+            "aoColumns": [
+                {
+                    "mData": "Date",
+                    "render": function (data, type, row) {
+                        return moment(row.Date).format("MM/DD/YYYY");
+                    }
+                },
+                { "mData": "Name" },
+                {
+                    "mData": "Amount",
+                    "render": function (data, type, row) {
+                        return '$' + row.Amount.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                    }
+                },
+                { "mData": "UserName" },
+                {
+                    "mData": "OfferEntryId",
+                    "render": function (data, type, row) {
+                        if (row.Notes != null)
+                            return '<button class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left" role="button" title="" data-content="' + row.Notes + '" data-original-title="Notes">Notes</button>';
+                        return "";
+                    }
+                }
+            ],
+            "initComplete": function () {
+                $('[data-toggle="popover"]').popover();
+            }
+        });
+    </script>
+}
