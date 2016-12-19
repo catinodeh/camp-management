@@ -36,5 +36,6 @@ namespace CampManagement.Domain.Entities
         public string CreatedBy { get; set; }
         public System.DateTime UpdatedDate { get; set; }
         public string UpdatedBy { get; set; }
+        public Guid RowGuid { get; set; }
     }
 }

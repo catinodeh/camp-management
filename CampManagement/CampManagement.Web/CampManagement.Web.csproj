@@ -189,6 +189,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\EmailSender.cs" />
     <Compile Include="Models\DefaultJsonReturn.cs" />
     <Compile Include="Models\RegistrationModel.cs" />
     <Compile Include="Models\States.cs" />
