@@ -1,0 +1,79 @@
+﻿@model IEnumerable<CampManagement.Web.Models.RegistrationSearchModel>
+
+@{
+    Layout = null;
+}
+
+@{
+    int LastGuardianId = 0;
+}
+@foreach (var searchModel in Model.Where(s => s.ResultType == 1))
+{
+    if (LastGuardianId != searchModel.GuardianId)
+    {
+        <div class="row">
+            <div class="col-xs-3" style="text-align: left">
+                <div class="btn-group">
+                    <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">Add &nbsp;<span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" rel="addguardian" data-guardianid="@searchModel.GuardianId">Guardian and Campers</a></li>
+                        <li><a href="#" rel="addguardianonly" data-guardianid="@searchModel.GuardianId">Guardian Only</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-5">@searchModel.GuardianName</div>
+            <div class="col-xs-3">@searchModel.GuardianPhone</div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-2" style="text-align: right">
+                <a href="#" class="btn btn-rounded btn-sm btn-default" rel="addcamper" data-guardianid="@searchModel.GuardianId" data-camperid="@searchModel.CamperId"><i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+            <div class="col-xs-5">@searchModel.CamperName</div>
+            <div class="col-xs-3">@(searchModel.CamperBirthDate.HasValue ? searchModel.CamperBirthDate.Value.ToString("MM/dd/yyyy") : "")</div>
+            <div class="col-xs-1">@searchModel.CamperLastYear</div>
+        </div>
+    }
+    else
+    {
+        <br />
+        <div class="row">
+            <div class="col-xs-2" style="text-align: right">
+                <a href="#" class="btn btn-rounded btn-sm btn-default" rel="addcamper" data-guardianid="@searchModel.GuardianId" data-camperid="@searchModel.CamperId"><i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+            <div class="col-xs-5">@searchModel.CamperName</div>
+            <div class="col-xs-3">@(searchModel.CamperBirthDate.HasValue ? searchModel.CamperBirthDate.Value.ToString("MM/dd/yyyy") : "")</div>
+            <div class="col-xs-1">@searchModel.CamperLastYear</div>
+        </div>
+    }
+    LastGuardianId = searchModel.GuardianId.Value;
+}
+@if (Model.Any(s => s.ResultType == 2))
+{
+    <hr />
+}
+@foreach (var searchModel in Model.Where(s => s.ResultType == 2))
+{
+    <div class="row">
+        <div class="col-xs-3" style="text-align: left">            
+            <a href="#" class="btn btn-rounded btn-sm btn-info" rel="addguardianonly"><i class="fa fa-arrow-circle-right"></i> Select</a>
+        </div>
+        <div class="col-xs-6">@searchModel.GuardianName</div>
+        <div class="col-xs-3">@searchModel.GuardianPhone</div>
+    </div>
+}
+@if (Model.Any(s => s.ResultType == 3))
+{
+    <hr />
+}
+@foreach (var searchModel in Model.Where(s => s.ResultType == 3))
+{
+    <div class="row">
+        <div class="col-xs-3" style="text-align: left">
+            <a href="#" class="btn btn-rounded btn-sm btn-default" rel="addcamper" data-camperid="@searchModel.CamperId" ><i class="fa fa-arrow-circle-right"></i> Add</a>
+        </div>
+        <div class="col-xs-5">@searchModel.CamperName</div>
+        <div class="col-xs-3">@(searchModel.CamperBirthDate.HasValue ? searchModel.CamperBirthDate.Value.ToString("MM/dd/yyyy") : "")</div>
+        <div class="col-xs-1">@searchModel.CamperLastYear</div>
+    </div>
+}

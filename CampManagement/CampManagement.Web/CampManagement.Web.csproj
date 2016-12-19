@@ -184,10 +184,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OffersController.cs" />
+    <Compile Include="Controllers\RegistrationsController.cs" />
     <Compile Include="Filters\TempData.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\DefaultJsonReturn.cs" />
+    <Compile Include="Models\RegistrationModel.cs" />
     <Compile Include="Models\States.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -233,6 +236,7 @@
     <Content Include="js\app.data.js" />
     <Content Include="js\app.js" />
     <Content Include="js\app.plugin.js" />
+    <Content Include="js\registration.js" />
     <Content Include="js\site.js" />
     <Content Include="js\site.min.js" />
     <Content Include="lib\bootstrap\dist\css\bootstrap-theme.css" />
@@ -247,6 +251,8 @@
     <Content Include="lib\datatables\jquery.dataTables.min.js" />
     <Content Include="lib\datepicker\bootstrap-datepicker.js" />
     <Content Include="lib\datepicker\datepicker.css" />
+    <Content Include="lib\fuelux\fuelux.css" />
+    <Content Include="lib\fuelux\fuelux.js" />
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
     <Content Include="lib\jquery-validation\dist\additional-methods.js" />
@@ -346,6 +352,13 @@
     <Content Include="Views\Guardians\Manage.cshtml" />
     <Content Include="Views\Campers\Manage.cshtml" />
     <Content Include="Views\Offers\Manage.cshtml" />
+    <Content Include="Views\Registrations\List.cshtml" />
+    <Content Include="Views\Registrations\Manage.cshtml" />
+    <Content Include="Views\Registrations\ManageSearch.cshtml" />
+    <Content Include="Views\Registrations\ManageSearchResultCreate.cshtml" />
+    <Content Include="Views\Registrations\ManageSearchResultEdit.cshtml" />
+    <Content Include="Views\Guardians\Detail.cshtml" />
+    <Content Include="Views\Campers\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

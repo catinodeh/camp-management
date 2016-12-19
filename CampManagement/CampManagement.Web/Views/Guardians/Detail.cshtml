@@ -1,0 +1,63 @@
+﻿@model CampManagement.Domain.Entities.Guardian
+
+    @{
+    Layout = null;
+}
+
+<div id="guardianInfo">
+    <h2 style="display: inline;">
+        <i class='fa fa-user'></i>&nbsp;@Model.Name
+    </h2> 
+    <a href="@Url.Action("Manage", "Guardians", new { id = Model.GuardianId})" style="display: inline; color: blue">Edit</a>
+    <hr style="clear:both;" />
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Email, new {htmlAttributes = new {@class = "form-control", placeholder = "my@email.com", @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control", placeholder = "XXX-XXX-XXXX", @readonly = "" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address1, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Address1, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.City, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.City, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address2, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Address2, new {htmlAttributes = new {@class = "form-control", placeholder = "AP#, Suite, Ext", @readonly = "" } })
+            </div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.State, htmlAttributes: new {@class = "control-label"})
+                @Html.DropDownListFor(x => x.State, CampManagement.Web.Models.States.GetStatesList(), new {@class = "form-control", @readonly = "" })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Zip, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Zip, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+            </div>
+        </div>
+    </div>
+</div>
+

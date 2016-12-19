@@ -1,0 +1,59 @@
+﻿@using CampManagement.Web.Models
+@model CampManagement.Domain.Entities.Camper
+
+@{
+    Layout = null;
+}
+
+<br/>
+<div id="camper@(Model.CamperId)">
+    <h2 style="display: inline;">
+        <i class='fa fa-@(Model.Gender == "M" ? "male" : "female")'></i>&nbsp;@Model.FirstName @Model.LastName
+    </h2>
+    <a href="@Url.Action("Manage", "Campers", new { id = Model.CamperId})" style="display: inline; color: blue">Edit</a>
+    <hr style="clear:both;" />
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Email, new {htmlAttributes = new {@class = "form-control", placeholder = "my@email.com", @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control", placeholder = "XXX-XXX-XXXX", @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BirthDate, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.BirthDate, new {htmlAttributes = new {@class = "form-control", placeholder = "MM/DD/YYYY", @readonly = "", Value = Model == null || Model.BirthDate == default(DateTime) ? "" : Model.BirthDate.ToString("MM/dd/yyyy")}})
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="form-group">
+                <label class="control-label">Grade</label>
+                <input type="text" class="form-control" value="@ViewBag.Grade"/>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label class="control-label">Camp</label>
+                <select class="form-control">
+                    @foreach (var camps in (List<AvailableCamps>)ViewBag.Camps)
+                    {
+                        <option value="@camps.CampSetupId" @(ViewBag.CampSetupId == camps.CampSetupId ? "selected='selected'" : "" ) >@camps.Description (Grades @camps.FromGrade to @camps.ToGrade) @camps.Price.ToString("C")</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-danger pull-right" onclick="removeCamper(@Model.CamperId)">Remove</button>
+        </div>
+    </div>
+</div>
