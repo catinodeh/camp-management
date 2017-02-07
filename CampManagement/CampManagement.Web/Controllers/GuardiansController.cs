@@ -8,10 +8,13 @@ using System.Web;
 using System.Web.Mvc;
 using CampManagement.Data;
 using CampManagement.Domain.Entities;
+using CampManagement.Email;
+using CampManagement.Web.Models;
 using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class GuardiansController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
@@ -49,8 +52,32 @@ namespace CampManagement.Web.Controllers
                 guardian.CreatedDate = guardian.UpdatedDate = DateTime.Now;
                 guardian.CreatedBy = User.Identity.GetUserId();
                 guardian.UpdatedBy = User.Identity.GetUserId();
+                guardian.EmailConfirmed = false;
                 db.Guardians.Add(guardian);
                 db.SaveChanges();
+
+                if (guardian.Email != null)
+                {
+                    var request = new SendRequest();
+                    request.TemplateId = "tem_bdTJWQmM6bDGpc3KhpVtM3cD";
+                    request.RecipientAddress = guardian.Email;
+                    request.SenderAddress = "prop@michelwilker.com";
+
+                    NewGuardianEmail obj = new NewGuardianEmail();
+                    obj.first_name = guardian.Name;
+                    obj.button_text = "Confirmar";
+
+                    request.Data = obj;
+
+                    var client = new SendWithUsClient("live_52e431dbf15c6d1b7a3b129904fc6958bff8794e");
+                    var response = client.Send(request);
+                }
+
+                if (Request["autoclose"] == "1")
+                {
+                    TempData["close"] = true;
+                }
+
                 return RedirectToAction("Manage");
             }
 
@@ -66,11 +93,22 @@ namespace CampManagement.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                var currentEmail = db.Guardians.Where(g => g.GuardianId == guardian.GuardianId).Select(g => g.Email).FirstOrDefault();
+
+                if (currentEmail != guardian.Email || string.IsNullOrEmpty(guardian.Email))
+                    guardian.EmailConfirmed = false;
+
                 guardian.Phone = guardian.Phone != null ? guardian.Phone.Replace("(", "").Replace(")", "").Replace("-", "") : null;
                 guardian.UpdatedBy = User.Identity.GetUserId();
                 guardian.UpdatedDate = DateTime.Now;
                 db.Entry(guardian).State = EntityState.Modified;
                 db.SaveChanges();
+
+                if (Request["autoclose"] == "1")
+                {
+                    TempData["close"] = true;
+                }
+
                 return RedirectToAction("Manage");
             }
             return View("Manage", guardian);

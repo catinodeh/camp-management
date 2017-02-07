@@ -22,16 +22,10 @@
             <span>Campers</span>
         </a>
     </li>
-    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Offers" ? "active" : "")">
-        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Registrations" ? "active" : "")">
+        <a href="@Url.Action("Index", "Registrations", new { id = "" })">
             <i class="fa fa-sitemap"></i>
             <span>Registrations</span>
-        </a>
-    </li>
-    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Payments" ? "active" : "")">
-        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
-            <i class="fa fa-dollar"></i>
-            <span>Payments</span>
         </a>
     </li>
     <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Offers" ? "active" : "")">
@@ -41,8 +35,8 @@
         </a>
     </li>
     @if (User.Identity.IsAuthenticated && User.IsInRole("Administrators"))
-    {
-        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" ? "active" : "")">
+    {                
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" || ViewContext.RouteData.Values["controller"].ToString() == "CampSetups" ? "active" : "")">
             <a href="@Url.Action("Create", "Camps", new { id = "" })">
                 <i class="fa fa-calendar"></i>
                 <span>Camps</span>

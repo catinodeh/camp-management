@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class CampersController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
@@ -52,6 +53,12 @@ namespace CampManagement.Web.Controllers
                 camper.UpdatedBy = User.Identity.GetUserId();
                 db.Campers.Add(camper);
                 db.SaveChanges();
+
+                if (Request["autoclose"] == "1")
+                {
+                    TempData["close"] = true;
+                }
+
                 return RedirectToAction("Manage");
             }
 
@@ -72,6 +79,12 @@ namespace CampManagement.Web.Controllers
                 camper.UpdatedDate = DateTime.Now;
                 db.Entry(camper).State = EntityState.Modified;
                 db.SaveChanges();
+
+                if (Request["autoclose"] == "1")
+                {
+                    TempData["close"] = true;
+                }
+
                 return RedirectToAction("Manage");
             }
             return View("Manage", camper);

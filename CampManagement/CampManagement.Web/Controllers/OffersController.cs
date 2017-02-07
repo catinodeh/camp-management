@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class OffersController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
@@ -37,6 +38,24 @@ namespace CampManagement.Web.Controllers
                 OfferEntryId = 0,
                 OfferId = offerSetup.OfferId
             });
+        }
+
+        public JsonResult GetOfferAvailable(int year)
+        {
+            var totalOffer = (from o in db.Offers
+                               join oe in db.OfferEntries on o.OfferId equals oe.OfferId
+                               where o.Year == year
+                               select oe.Amount)
+                               .DefaultIfEmpty(0)
+                               .Sum();
+
+            var totalPaymentsOffer = (from p in db.RegistrationPayments
+                            where p.Date.Year == DateTime.Now.Year && p.PaymentTypeId == 4
+                            select p.Amount)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+
+            return Json(totalOffer - totalPaymentsOffer, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetOfferEntries(int year)

@@ -15,12 +15,18 @@ namespace CampManagement.Domain.Entities
         public int ActivityId { get; set; }
         public int CampSetupId { get; set; }
         [Required]
-        [StringLength(5)]
+        [StringLength(100)]
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
         public System.DateTime UpdatedDate { get; set; }
+    }
+
+    public class UserActivity
+    {
+        public List<ExtraActivity> ExtraActivities { get; set; }
+        public List<RegistrationCamperExtraActivity> CamperExtraActivities { get; set; }
     }
 }

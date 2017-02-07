@@ -2804,3 +2804,7 @@ fieldset[disabled] .btn-gplus.active {
     display: inherit !important;
   }
 }
+
+.balance {
+    color: red;
+}

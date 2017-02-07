@@ -21,6 +21,7 @@ namespace CampManagement.Domain.Entities
         public string Email { get; set; }
         [StringLength(14)]
         public string Phone { get; set; }
+        public bool Active { get; set; }
         [RegularExpression(@"^(M|F)$")]
         [StringLength(1)]
         [Required]

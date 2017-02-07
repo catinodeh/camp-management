@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class ExtraActivitiesController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
@@ -27,7 +28,24 @@ namespace CampManagement.Web.Controllers
             }
 
             return View(readOnly == true ? "IndexReadOnly" : "Index", result);
-        }        
+        }
+
+        public ActionResult ExtraActivities(int id)
+        {
+            var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
+            var thisCamperActivities = db.RegistrationCamperExtraActivities
+                                        .Where(e => e.RegistrationCamperId == id)
+                                        .ToList();
+            var activities = db.ExtraActivities.Where(ea => ea.CampSetupId == reg.CampSetupId).ToList();
+
+            var obj = new UserActivity()
+            {
+                ExtraActivities = activities,
+                CamperExtraActivities = thisCamperActivities
+            };
+
+            return View(obj);
+        }
 
         // POST: ExtraActivities/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 

@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace CampManagement.Domain.Entities
 {
-    [Table("RegistrationCamperExtraActivitiy")]
-    public class RegistrationCamperExtraActivitiy
+    [Table("RegistrationCamperExtraActivity")]
+    public class RegistrationCamperExtraActivity
     {
         [Key]
         public int ExtraActivityId { get; set; }
         public int RegistrationCamperId { get; set; }
         public int ActivityId { get; set; }
+        public decimal Price { get; set; }
     }
 }

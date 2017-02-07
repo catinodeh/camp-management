@@ -1,0 +1,151 @@
+﻿@model IEnumerable<CampManagement.Domain.Entities.Registration>
+
+@{
+    ViewBag.Title = DateTime.Now.Year + " Registrations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-sm-12" style="padding-bottom: 10px">
+    <div class="row">
+        <div class="form-group">
+            <a href="@Url.Action("Create")" class="btn btn-success pull-right"><i class="fa fa-sitemap"></i>&nbsp;New Registration</a>
+        </div>
+    </div>
+</div>
+<div class="col-sm-12">
+    <div class="row">
+        <section class="panel">
+            <header class="panel-heading font-bold">List of Registrations</header>
+            <div class="table-responsive">
+                <table class="table table-striped m-b-none" data-ride="datatables" id="mytable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        @if (Request["campId"] == "0" || Request["campId"] == null)
+                        {
+                            <th>Name</th>
+                        }
+                        <th>CamperName</th>                        
+                        <th>Guardian</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Total</th>
+                        <th>Balance</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+
+    <script language="javascript">
+        function format2(n, currency) {
+            return currency + " " + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+        }
+
+        $('[data-ride="datatables"]')
+            .each(function() {
+                var oTable = $(this)
+                    .dataTable({
+                        "paging": false,
+                        "bProcessing": true,
+                        @if (Request["campId"] == "0" || Request["campId"] == null)
+                        {
+                            <text>
+                            "order": [[1, "desc"]],
+                            </text>
+                        }
+                        "sAjaxSource":
+                            '@Url.Action("ThisYearRegistrations", "Registrations")?campId=@(Request["campId"] == null ? "0" : Request["campId"])',
+                        "sAjaxDataProp": "",
+                        "sDom":
+                            "<'row'<'col-xs-3'l><'col-xs-4'<'#dt_camps.dataTables_length'>><'col-xs-5'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                        "sPaginationType": "full_numbers",
+                        "aoColumns": [
+                            {
+                                "mData": "RegistrationId",
+                                "width": "50px",
+                                "render": function (data, type, row) {
+                                    return "R" + row.RegistrationId;
+                                }
+                            },
+                            @if (Request["campId"] == "0" || Request["campId"] == null)
+                            {
+                                <text>
+                                    { "mData": "Name" },
+                                </text>
+                            }
+                            { "mData": "CamperName" },
+
+                            { "mData": "GuardianName" },
+                            { "mData": "Email" },
+                            {
+                                "mData": "Phone",
+                                "render": function(data, type, row) {
+                                    return formatPhoneNumber(row.Phone);
+                                }
+                            },
+                            {
+                                "mData": "Price",
+                                "render": function (data, type, row) {
+                                    return format2(row.Price, '$');
+                                }
+                            },
+                            {
+                                "mData": "TotalRegistration",
+                                "render": function (data, type, row) {
+                                    if (row.CompletedDate == null) return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-";
+                                    if (row.TotalRegistration - row.TotalPayments > 0)
+                                        return "<a class='balance' href='@Url.Action("Manage","Payments")/" + row.RegistrationId + "'>" + format2(row.TotalRegistration - row.TotalPayments, '$') + "</a>";
+                                    return format2(row.TotalRegistration - row.TotalPayments, '$');
+                                }
+                            },
+                            {
+                                "mData": "RegistrationId",
+                                "render": function(data, type, row) {
+                                    return "<a href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                                }
+                            }
+                        ]
+                    });
+            });
+
+        $("#dt_camps")
+            .css("text-align", "center")
+            .html("<form action='@Url.Action("Index")' id='frmRegistrations'><select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></form>");
+
+        $.ajax({
+            url: "@Url.Action("GetThisYearSetups", "CampSetups")",
+            method: "GET",
+            cache: false,
+            success: function(data) {
+                $(data)
+                    .each(function(i, camp) {
+                        $("#camps")
+                            .append("<option value='" + camp.CampId + "' " + (camp.CampId == '@(Request["campId"])'
+                                    ? "selected"
+                                    : "") +
+                                ">" +
+                                camp.Name +
+                                "</camp>");
+                    });
+
+
+            }
+        });
+
+        $("#camps")
+            .on("change",
+                function() {
+                    $("#frmRegistrations").submit();
+                });
+    </script>
+}

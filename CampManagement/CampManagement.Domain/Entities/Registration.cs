@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CampManagement.Domain.Entities
 {
+    [Table("Registration")]
     public class Registration
     {
         [Key]
         public int RegistrationId { get; set; }
+        public int? GuardianId { get; set; }
         public string Notes { get; set; }
-        public bool GuardianEmailConfirmed { get; set; }
-        public decimal? CampAmount { get; set; }
-        public decimal? ExtraAmount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal Balance { get; set; }
-        public System.DateTime CreatedDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
-        public System.DateTime UpdatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
         public string UpdatedBy { get; set; }
+
+        public decimal GetTotal
+        {
+            get
+            {
+                return Campers != null ? 
+                    Campers.Sum(c => c.Price) + 
+                        Campers.Where(c => c.ExtraActivities != null)
+                        .Sum(c => c.ExtraActivities.Sum(ea => ea.Price)) : 0;
+            }
+        }
+
+        public virtual Guardian Guardian { get; set; }
+        public virtual List<RegistrationCamper> Campers { get; set; }
     }
 }

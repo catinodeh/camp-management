@@ -1,0 +1,152 @@
+﻿@model CampManagement.Domain.Entities.Registration
+
+@{
+    Layout = null;
+    decimal CampAmount, ExtraAmount, Total;
+}
+
+<section class="panel">
+    <header class="panel-heading bg-light">
+        <ul class="nav nav-tabs pull-right">
+            <li class="active">
+                <a href="#registrations_panel" data-toggle="tab">
+                    <i class="fa fa-users text-default"></i> Registrations
+                </a>
+            </li>
+            @if (Model?.Campers?.Count > 0 && Model.Campers.Any(c => c.Cancelled == true))
+            {
+                <li class="">
+                    <a href="#registrations_canceled" data-toggle="tab" style="color:red">
+                        <i class="fa fa-thumbs-o-down text-default"></i> Cancellations
+                    </a>
+                </li>
+            }
+        </ul> 
+        <span class="hidden-sm">&nbsp;</span> 
+    </header>
+    <div class="panel-body">
+        <div class="tab-content">
+            <div class="tab-pane active" id="registrations_panel">
+                @if (Model?.Guardian != null)
+                {
+                    Html.RenderPartial("~/Views/Guardians/Detail.cshtml", Model.Guardian);
+                }
+                 
+                @if (Model?.Campers != null)
+                {
+                    foreach (var registration in Model.Campers.Where(c => c.Cancelled != true))
+                    {
+                        var viewdatas = new ViewDataDictionary();
+
+                        if (registration.Cancelled != null || ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Payments")
+                        {
+                            viewdatas.Add(new KeyValuePair<string, object>("readonly", true));
+                        }
+
+                        if (Model.CompletedDate != null)
+                        {
+                            viewdatas.Add(new KeyValuePair<string, object>("showremove", false));
+                            viewdatas.Add(new KeyValuePair<string, object>("showcancel", true));
+                        }
+                        else
+                        {
+                            viewdatas.Add(new KeyValuePair<string, object>("showremove", false));
+                            viewdatas.Add(new KeyValuePair<string, object>("showcancel", false));
+                        }
+
+                        if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Payments")
+                        {
+                            viewdatas.Add(new KeyValuePair<string, object>("hideextra", true));
+                        }
+
+                        Html.RenderPartial("~/Views/Campers/Detail.cshtml", registration, viewdatas);
+                    }
+                }
+                 
+                <div id="payments">
+                    <h2 style="display: inline;">
+                        <i class='fa fa-dollar'></i>&nbsp;Amount
+                    </h2>
+                    <hr style="clear: both;" />
+                    <div class="row">
+                        <div class="col-lg-8"><h3><b>Camp:</b></h3></div>
+                        @{
+                            CampAmount = Model?.Campers?.Sum(s => s.Price) ?? 0;
+                        }
+                        <div class="col-lg-3" style="text-align: right"><h3>@(CampAmount.ToString("C"))</h3></div>
+                        <div class="col-lg-1"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8"><h3><b>Extra Activities:</b></h3></div>
+                        @{
+                            ExtraAmount = Model?.Campers?.Where(s => s.ExtraActivities.Any()).Sum(s => s.ExtraActivities.Sum(m => m.Price)) ?? 0;
+                        }
+                        <div class="col-lg-3" style="text-align: right"><h3>@(ExtraAmount.ToString("C"))</h3></div>
+                        <div class="col-lg-1"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8"><h3><b>Total:</b></h3></div>
+                        @{
+                            Total = CampAmount + ExtraAmount;
+                        }
+                        <div class="col-lg-3" style="text-align: right"><h3 id="totalAmount" data-amount="@(Total)">@(Total.ToString("C"))</h3></div>
+                        <div class="col-lg-1"></div>
+                    </div>
+                    <div class="row pull-right">
+                        <div class="col-lg-12">
+                            <p class="tpbutton btn-toolbar text-center">
+                                @if (CampAmount > 0 && Total == 0)
+                                {
+                                    <a class="btn navbar-btn btn-primary" href="#">
+                                        <i class="fa fa fa-thumbs-o-up"></i>&nbsp;Confirm
+                                    </a>
+                                }
+                                @if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() != "Payments")
+                                {
+                                    if (!Model.CompletedDate.HasValue)
+                                    {
+                                        if (Model.GuardianId.HasValue && Model.Campers.Any())
+                                        {
+                                            <a class="btn navbar-btn btn-default" href="@Url.Action("Finish", new {id = Model?.RegistrationId})">Finish</a>
+                                            <a class="btn navbar-btn btn-success" href="@Url.Action("FinishAndPay", new {id = Model?.RegistrationId})"><i class="fa fa-dollar"></i>&nbsp;Finish & Pay</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Back</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="btn navbar-btn btn-success" href="@Url.Action("Manage", "Payments", new {id = Model?.RegistrationId})"><i class="fa fa-dollar"></i>&nbsp;Make a Payment</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Back</a>
+                                    <a class="btn navbar-btn btn-success" href="@Url.Action("Index", "Registrations", new { id = Model.RegistrationId })"><i class="fa fa-edit"></i>&nbsp;Edit</a>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model?.Campers?.Count > 0 && Model.Campers.Any(c => c.Cancelled == true))
+            {
+                <div class="tab-pane" id="registrations_canceled">
+                    @foreach (var registration in Model.Campers.Where(c => c.Cancelled == true))
+                    {
+                        var viewdatas = new ViewDataDictionary();
+
+                        viewdatas.Add(new KeyValuePair<string, object>("readonly", true));
+                        viewdatas.Add(new KeyValuePair<string, object>("showremove", false));
+                        viewdatas.Add(new KeyValuePair<string, object>("showcancel", false));
+                        viewdatas.Add(new KeyValuePair<string, object>("hideextra", true));
+
+                        Html.RenderPartial("~/Views/Campers/Detail.cshtml", registration, viewdatas);
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+

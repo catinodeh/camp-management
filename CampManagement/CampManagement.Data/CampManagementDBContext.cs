@@ -7,6 +7,8 @@ namespace CampManagement.Data
     {
         public CampManagementDbContext() : base("DefaultConnection")
         {
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
             Database.SetInitializer<CampManagementDbContext>(null);
         }
 
@@ -18,9 +20,10 @@ namespace CampManagement.Data
         public DbSet<Offer> Offers { get; set; }
         public DbSet<OfferEntry> OfferEntries { get; set; }
         public DbSet<Registration> Registrations { get; set; }
-        public DbSet<RegistrationCamperExtraActivitiy> RegistrationCamperExtraActivities { get; set; }
+        public DbSet<RegistrationCamperExtraActivity> RegistrationCamperExtraActivities { get; set; }
         public DbSet<RegistrationCamper> RegistrationCampers { get; set; }
         public DbSet<RegistrationPayment> RegistrationPayments { get; set; }
+        public DbSet<CurrentRegistration> CurrentRegistrations { get; set; }
         public DbSet<User> Users { get; set; }
     }
 }

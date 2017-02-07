@@ -21,9 +21,9 @@ namespace CampManagement.Domain.Entities
         public System.DateTime EndDay { get; set; }
         [Range((double) 1.0, 1000, ErrorMessage = "Price must be between $1 and $1000")]
         public decimal CurrentPrice { get; set; }
-        [Range(1,10)]
+        [Range(1,12)]
         public int FromGrade { get; set; }
-        [Range(1, 10)]
+        [Range(1, 12)]
         public int ToGrade { get; set; }
         [Range(1, 1000)]
         public int Spaces { get; set; }

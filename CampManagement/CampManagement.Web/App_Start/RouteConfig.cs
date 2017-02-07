@@ -14,10 +14,18 @@ namespace CampManagement.Web
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Default3",
+                url: "Registrations/Search",
+                defaults: new { controller = "Registrations", action = "Search" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapMvcAttributeRoutes();
         }
     }
 }

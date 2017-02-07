@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Web;
-using CampManagement.Web.Helpers;
 
 namespace CampManagement.Web.Helpers
 {

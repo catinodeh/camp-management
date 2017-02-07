@@ -17,7 +17,9 @@
         <section class="panel">
             <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.GuardianId == 0 ? "New" : "Edit") Guardian</header>
             <div class="panel-body">
-                @using (Html.BeginForm(Model == null || Model.GuardianId == 0 ? "Create" : "Edit", "Guardians", FormMethod.Post, new { @class = "", role = "form", id = "frmGuardians" }))
+                @using (Html.BeginForm(Model == null || Model.GuardianId == 0 ? "Create" : "Edit", 
+                            "Guardians", new { autoclose = Request["autoclose"] }, FormMethod.Post, 
+                            new { @class = "", role = "form", id = "frmGuardians" }))
                 {
                     <div class="row valign">
                         <div class="col-xs-12"> 
@@ -26,12 +28,12 @@
                             @Html.HiddenFor(model => model.CreatedBy)
                             @Html.HiddenFor(model => model.GuardianId)
                             @Html.ValidationSummary("", new { @class = "text-danger" })
-                            
+                            <input type="hidden" name="autoclose" value="@(ViewBag.autoclose)" />
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
-                                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", Value = Model?.Name ?? Request["name"] } })
                                     </div>
                                 </div>
                                 
@@ -150,7 +152,12 @@
                         "sPaginationType": "full_numbers",
                         "aoColumns": [
                             { "mData": "Name" },
-                            { "mData": "Phone" },
+                            {
+                                "mData": "Phone",
+                                "render": function(data, type, row) {
+                                    return formatPhoneNumber(row.Phone);
+                                }
+                            },
                             { "mData": "Email" },
                             {
                                 "mData": "GuardianId",
@@ -161,5 +168,14 @@
                         ]
                     });
             });
+
+        
     </script>
+    @if (Convert.ToBoolean(TempData["close"]))
+    {
+        <script type="text/javascript">
+            opener.location.reload();
+            window.close();
+        </script>
+    }
 }

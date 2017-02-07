@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Web;
+using CampManagement.Domain.Entities;
 using Microsoft.Owin.Security.DataHandler;
 
 namespace CampManagement.Web.Models
@@ -32,6 +33,7 @@ namespace CampManagement.Web.Models
         public string CamperName { get; set; }
         public DateTime? CamperBirthDate { get; set; }
         public string CamperPhone { get; set; }
+        public string CamperGender { get; set; }
         public int? CamperLastYear { get; set; }
     }
 
@@ -41,6 +43,25 @@ namespace CampManagement.Web.Models
         public string Description { get; set; }
         public int FromGrade { get; set; }
         public int ToGrade { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    public class NewGuardianEmail
+    {
+        public string first_name { get; set; }
+        public string button_text { get; set; }
+    }
+
+    public class CurrentSetupModel
+    {
+        public Guardian Guardian { get; set; }
+        public List<RegistrationCamper> Registrations { get; set; }
+    }
+
+    public class UpdateRegistrationCamperModel
+    {
+        public int Grade { get; set; }
+        public int CampSetupId { get; set; }
         public decimal Price { get; set; }
     }
 }

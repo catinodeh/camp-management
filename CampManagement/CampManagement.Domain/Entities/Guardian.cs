@@ -22,6 +22,7 @@ namespace CampManagement.Domain.Entities
         [StringLength(50)]
         [EmailAddress]
         public string Email { get; set; }
+        public bool? EmailConfirmed { get; set; }
         [StringLength(100)]
         public string Address1 { get; set; }
         [StringLength(50)]
@@ -32,6 +33,7 @@ namespace CampManagement.Domain.Entities
         public string State { get; set; }
         [StringLength(5)]
         public string Zip { get; set; }
+        public bool Active { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime UpdatedDate { get; set; }

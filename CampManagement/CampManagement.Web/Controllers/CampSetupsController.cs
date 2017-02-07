@@ -13,9 +13,26 @@ using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class CampSetupsController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
+
+        public JsonResult GetThisYearSetups()
+        {
+            int thiYear = DateTime.Now.Year;
+            var list = (from c in db.Camps
+                        join cs in db.CampSetups on c.CampId equals cs.CampId
+                        where cs.Year == thiYear
+                        orderby c.Name
+                        select new
+                        {
+                            c.CampId,
+                            c.Name
+                        }).ToList();
+
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
 
         // GET: CampSetups
         [GetModelStateFromTempData]
@@ -66,13 +83,15 @@ namespace CampManagement.Web.Controllers
                     db.CampSetups.Add(campSetup);
                 }
                 else
-                {                    
+                {             
+                    campSetup.UpdatedBy = User.Identity.GetUserId();
+                    campSetup.UpdatedDate = DateTime.Now;
                     db.Entry(campSetup).State = EntityState.Modified;
                 }
 
                 
                 db.SaveChanges();
-                //return RedirectToAction("Edit", "Camps", new { id = campSetup.CampId});
+                return RedirectToAction("Edit", "Camps", new { id = campSetup.CampId});
             }
 
             TempData["model"] = campSetup;

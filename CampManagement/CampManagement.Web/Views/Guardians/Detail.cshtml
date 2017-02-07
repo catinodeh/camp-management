@@ -8,19 +8,20 @@
     <h2 style="display: inline;">
         <i class='fa fa-user'></i>&nbsp;@Model.Name
     </h2> 
-    <a href="@Url.Action("Manage", "Guardians", new { id = Model.GuardianId})" style="display: inline; color: blue">Edit</a>
+    <a href="@Url.Action("Manage", "Guardians", new { id = Model.GuardianId, autoclose = "1"})" style="display: inline; color: blue" target="_blank">Edit</a>
     <hr style="clear:both;" />
+    @Html.HiddenFor(model => model.GuardianId)
     <div class="row">
         <div class="col-xs-8">
             <div class="form-group">
                 @Html.LabelFor(model => model.Email, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.Email, new {htmlAttributes = new {@class = "form-control", placeholder = "my@email.com", @readonly = "" } })
+                @Html.EditorFor(model => model.Email, new {htmlAttributes = new {@class = "form-control", @readonly = "" } })
             </div>
         </div>
         <div class="col-xs-4">
             <div class="form-group">
-                @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control", placeholder = "XXX-XXX-XXXX", @readonly = "" } })
+                @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label" })
+                @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control",  @readonly = "", Value = Model.Phone.Length == 10 ? string.Format("({0}) {1}-{2}", Model.Phone.Substring(0, 3), Model.Phone.Substring(3, 3), Model.Phone.Substring(6)) : "" } })
             </div>
         </div>
     </div>
@@ -28,13 +29,13 @@
         <div class="col-xs-8">
             <div class="form-group">
                 @Html.LabelFor(model => model.Address1, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.Address1, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+                @Html.EditorFor(model => model.Address1, new {htmlAttributes = new {@class = "form-control",  @readonly = "" } })
             </div>
         </div>
         <div class="col-xs-4">
             <div class="form-group">
                 @Html.LabelFor(model => model.City, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.City, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+                @Html.EditorFor(model => model.City, new {htmlAttributes = new {@class = "form-control", @readonly = "" } })
             </div>
         </div>
     </div>
@@ -42,7 +43,7 @@
         <div class="col-xs-4">
             <div class="form-group">
                 @Html.LabelFor(model => model.Address2, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.Address2, new {htmlAttributes = new {@class = "form-control", placeholder = "AP#, Suite, Ext", @readonly = "" } })
+                @Html.EditorFor(model => model.Address2, new {htmlAttributes = new {@class = "form-control", @readonly = "" } })
             </div>
         </div>
 
@@ -55,9 +56,17 @@
         <div class="col-xs-4">
             <div class="form-group">
                 @Html.LabelFor(model => model.Zip, htmlAttributes: new {@class = "control-label"})
-                @Html.EditorFor(model => model.Zip, new {htmlAttributes = new {@class = "form-control", placeholder = "", @readonly = "" } })
+                @Html.EditorFor(model => model.Zip, new {htmlAttributes = new {@class = "form-control", @readonly = "" } })
             </div>
         </div>
     </div>
+    @if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() != "Payments")
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                <button class="btn btn-danger pull-right" onclick="removeGuardian(@Model.GuardianId)">Remove</button>
+            </div>
+        </div>
+    }
 </div>
 

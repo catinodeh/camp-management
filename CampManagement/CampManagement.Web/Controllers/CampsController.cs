@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace CampManagement.Web.Controllers
 {
+    [Authorize]
     public class CampsController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();

@@ -17,7 +17,7 @@
         <section class="panel">
             <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.CamperId == 0 ? "New" : "Edit") Camper</header>
             <div class="panel-body">
-                @using (Html.BeginForm(Model == null || Model.CamperId == 0 ? "Create" : "Edit", "Campers", FormMethod.Post, new { @class = "", role = "form", id = "frmCampers" }))
+                @using (Html.BeginForm(Model == null || Model.CamperId == 0 ? "Create" : "Edit", "Campers", new { autoclose = Request["autoclose"] }, FormMethod.Post, new { @class = "", role = "form", id = "frmCampers" }))
                 {
                     <div class="row valign">
                         <div class="col-xs-12">
@@ -30,14 +30,14 @@
                             <div class="row">
                                 <div class="col-xs-6">
                                     <div class="form-group">
-                                        @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label" })
-                                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label"})
+                                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", Value = Request["name"] != null ? Request["name"].Split(' ')[0] : Model?.FirstName } })
                                     </div>
                                 </div>
                                 <div class="col-xs-6">
                                     <div class="form-group">
-                                        @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label" })
-                                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label"})
+                                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", Value = Request["name"] != null && Request["name"].IndexOf(" ", StringComparison.CurrentCultureIgnoreCase) > 0 ? Request["name"].Split(' ')[Request["name"].Split(' ').Length - 1] : Model?.LastName } })
                                     </div>
                                 </div>
                             </div>
@@ -107,8 +107,8 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
+                            <th>BirthDate</th>
+                            <th>Phone</th>                            
                             <th></th>
                         </tr>
                     </thead>
@@ -122,7 +122,7 @@
 @section scripts {
     <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet" />
     <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
-
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
     <script>
         $("#Phone").mask("(999)-999-9999");
         $("#BirthDate").mask("99/99/9999");
@@ -142,8 +142,18 @@
                                     return row.FirstName + ' ' + row.LastName;
                                 }
                             },
-                            { "mData": "Phone" },
-                            { "mData": "Email" },
+                            {
+                                "mData": "BirthDate",
+                                "render": function (data, type, row) {
+                                    return moment(row.BirthDate).format("MM/DD/YY");
+                                }
+                            },
+                            {
+                                "mData": "Phone",
+                                "render": function(data, type, row) {
+                                    return formatPhoneNumber(row.Phone);
+                                }
+                            },
                             {
                                 "mData": "CamperId",
                                 "render": function (data, type, row) {
@@ -154,4 +164,11 @@
                     });
             });
     </script>
+    @if (Convert.ToBoolean(TempData["close"]))
+    {
+        <script type="text/javascript">
+            opener.location.reload();
+            window.close();
+        </script>
+    }
 }

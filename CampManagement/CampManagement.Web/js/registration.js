@@ -1,47 +1,143 @@
-﻿function doSearch() {
-    $("#pnSearch,#pnSetup").show();
+﻿var this_js_script = $('script[src*=registration]'); // or better regexp to get the file name..
+var registrationid = this_js_script.attr('data-registrationid');
+
+function doSearch() {
+    $("#searchResult").empty();
+
     $.ajax({
         url: '/Registrations/Search?criteria=' + $("#txtCriteria").val(),
         method: 'GET',
         cache: false,
-        success: function (data) {
-            $("#searchResult").empty().html(data);
+        success: function (data, status, xhr, dataType) {
+            if (typeof (data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            $("#searchResult").html(data);
         }
     });
 }
 
-function addGuardian(guardianid) {
-    $("#setupContent").find("#guardianInfo").remove();
+function addGuardian(guardianid, callback) {
     $.ajax({
-        url: '/Registrations/AddGuardian/' + guardianid,
+        url: '/Registrations/' + registrationid + '/AddGuardian/' + guardianid,
         method: 'POST',
         cache: false,
-        success: function (data) {
-            $("#setupContent").prepend(data);
+        success: function (data, status, xhr, dataType) {
+            if (typeof(data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            $("#setupContent").empty().html(data);
+            if (callback != undefined)
+                callback(guardianid);
         }
     });
 }
 
 function addCamper(camperid) {
-    if ($("#camper" + camperid).length > 0) {
-        alert('Camper already added.');
-        return;
-    }
     $.ajax({
-        url: '/Registrations/AddCamper/' + camperid,
+        url: '/Registrations/' + registrationid + '/AddCamper/' + camperid,
         method: 'POST',
         cache: false,
-        success: function (data) {
-            $("#setupContent").append(data);
+        success: function (data, status, xhr, dataType) {
+            if (typeof (data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            // not valid JSON
+            $("#setupContent").html(data);
         }
     });
 }
 
+function cancelCamper(camperid, url) {
+    var result = confirm("Are you sure you want to cancel this camper's registration?");
+    if (result == null || !result) return;
+
+    $("#cancelRegistrationId").val(registrationid);
+    $("#cancelCamperId").val(camperid);
+    $("#redirectToUrl").val(url);
+
+    $('#cancelRegistration').modal('show');
+}
+
 function removeCamper(camperid) {
-    $("#camper" + camperid).remove();
+    var result = confirm("Are you sure you want to remove this camper?");
+    if (result == null || !result) return;
+
+    $.ajax({
+        url: '/Registrations/' + registrationid + '/RemoveCamper/' + camperid,
+        method: 'DELETE',
+        cache: false,
+        success: function (data, status, xhr, dataType) {
+            if (typeof (data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            // not valid JSON
+            $("#setupContent").html(data);
+        }
+    });
+}
+
+function updateCamper(registrationCamperId) {
+    var result = confirm("Are you sure you want to update this camper's info?");
+    if (result == null || !result) return;
+
+    var obj = {
+        Grade: $("#Grade_" + registrationCamperId).val(),
+        CampSetupId: $("#CampSetupId_" + registrationCamperId).val(),
+        Price: $("#Price_" + registrationCamperId).val()
+    }
+
+    if (obj.Grade == "") {
+        alert("Fill the Grade correctly");
+        return;
+    }
+
+    if (obj.Price == "") {
+        alert("Fill the Price correctly");
+        return;
+    }
+
+    $.ajax({
+        url: '/Registrations/' + registrationid + '/UpdateCamperSetup/' + registrationCamperId,
+        method: 'PUT',
+        cache: false,
+        data: obj,
+        success: function (data, status, xhr, dataType) {
+            if (typeof (data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            // not valid JSON
+            $("#setupContent").html(data);
+        }
+    });
+}
+
+function removeGuardian(guardianid) {
+    var result = confirm("Are you sure you want to remove this registration's guardian?");
+    if (result == null || !result) return;
+
+    $.ajax({
+        url: '/Registrations/' + registrationid + '/RemoveGuardian/' + guardianid,
+        method: 'DELETE',
+        cache: false,
+        success: function (data, status, xhr, dataType) {
+            if (typeof (data) == "object") {
+                alert(data.Message);
+                return;
+            }
+            // not valid JSON
+            $("#setupContent").html(data);
+        }
+    });
 }
 
 $("#txtCriteria").focus();
+
 $(document).on("keypress", "#txtCriteria", function (e) {
     if (e.which == 13) {
         doSearch();
@@ -55,8 +151,16 @@ $("#btnSearch")
 $("#pnSearch")
     .on("click",
         "a[rel='addguardian']",
-        function () {
-            alert('addguardian');
+        function (e) {
+            e.preventDefault();
+            //First adding the guardian...
+            addGuardian($(this).data("guardianid"), function(guardianid) {
+                //Then adding the campers...
+                $("a[rel='addcamper'][data-guardianid='" + guardianid + "']")
+                    .each(function(i, item) {
+                        addCamper($(item).data("camperid"));
+                    });
+            });
         });
 
 $("#pnSearch")
@@ -71,5 +175,18 @@ $("#pnSearch")
         "a[rel='addcamper']",
         function (e) {
             e.preventDefault();
-            addCamper($(this).data("guardianid"));
+            addCamper($(this).data("camperid"));
         });
+
+function openExtraActivities(url, id) {
+
+    $.ajax({
+        url: url,
+        method: "GET",
+        cache: false,
+        success: function(data) {
+            $('#ea_' + id + ' .modal-body').html(data);
+            $('#ea_' + id).modal('show');
+        }
+    });
+}
