@@ -20,7 +20,7 @@ namespace CampManagement.Domain.Entities
         public decimal Price { get; set; }
         public bool? Registered { get; set; }
         public string RegisteredBy { get; set; }
-        public bool? Cancelled { get; set; }
+        public bool Cancelled { get; set; }
         public string CancelledBy { get; set; }
         public string CancelNotes { get; set; }
         public DateTime? CancelFinalized { get; set; }

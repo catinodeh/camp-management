@@ -254,6 +254,7 @@
                         });
 
                         $("#existingPayments hr").last().remove();
+                        $("#existingPayments").append("<div class='media-body'><h3 class='pull-left'>Paid: </h3><h3 class='pull-right'>$ " + (totalPayments).toFixed(2) + "</h3></div><div class='clear'></div>");
                         $("#existingPayments").append("<div class='media-body'><h3 class='pull-left'>Balance: </h3><h3 class='pull-right'>$ " + (totalRegistration - totalPayments).toFixed(2) + "</h3></div>");
                     }
 

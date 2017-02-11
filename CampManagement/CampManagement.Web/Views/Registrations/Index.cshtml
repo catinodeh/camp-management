@@ -96,7 +96,7 @@
                             {
                                 "mData": "Price",
                                 "render": function (data, type, row) {
-                                    return format2(row.Price, '$');
+                                    return format2(row.Price + (row.TotalActivities == null ? 0 : row.TotalActivities), '$');
                                 }
                             },
                             {

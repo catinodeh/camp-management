@@ -14,7 +14,8 @@
                     @if (!Model.Any(cs => cs.Year == DateTime.Now.Year)) { 
                         <li class="active">
                             <a href="#cs_@DateTime.Now.Year" data-toggle="tab">@DateTime.Now.Year</a>
-                        </li> 
+                        </li>
+                        firsts[0] = false;
                     }
 
                     @foreach (var campSetup in Model)
@@ -33,6 +34,7 @@
                         <div class="tab-pane active" id="cs_@DateTime.Now.Year">
                             @{ Html.RenderAction("Create", "CampSetups", Model.FirstOrDefault(cs => cs.Year == DateTime.Now.Year)); }
                         </div>
+                        firsts[1] = false;
                     }
                     
                     @foreach (var campSetup in Model)

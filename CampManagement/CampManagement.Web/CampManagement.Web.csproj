@@ -355,6 +355,7 @@
     <Content Include="lib\jquery-validation\LICENSE.md" />
     <Content Include="lib\jquery\.bower.json" />
     <Content Include="lib\jquery\dist\jquery.min.map" />
+    <None Include="Properties\PublishProfiles\LOCAL %28RELEASE%29.pubxml" />
     <None Include="Properties\PublishProfiles\RELEASE %28smarter.asp%29.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

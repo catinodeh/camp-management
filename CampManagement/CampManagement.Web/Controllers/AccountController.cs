@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using CampManagement.Data;
+using CampManagement.Domain.Entities;
 using CampManagement.Domain.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -153,6 +154,18 @@ namespace CampManagement.Web.Controllers
 
                 return View();
             }
+        }
+
+        public JsonResult GetUserNameById(string id)
+        {
+            ApplicationUser _user = null;
+            using (var context = new ApplicationDbContext())
+            {
+                context.Configuration.LazyLoadingEnabled = false;
+                context.Configuration.ProxyCreationEnabled = false;               
+                _user = context.Users.FirstOrDefault(u => u.Id == id);                
+            }
+            return Json(_user.UserName, JsonRequestBehavior.AllowGet);
         }
 
         private RegisterViewModel GetUser(string id)

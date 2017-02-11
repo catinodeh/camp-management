@@ -187,6 +187,37 @@ function openExtraActivities(url, id) {
         success: function(data) {
             $('#ea_' + id + ' .modal-body').html(data);
             $('#ea_' + id).modal('show');
+            $("#ea_" + id + " button.btn-success").unbind("click").on("click", function () {
+                saveExtraActivities(id);
+            });
+        }
+    });
+}
+
+function saveExtraActivities(id) {
+    if ($("#ea_" + id + " input[type='checkbox']").length === 0) {
+        $('#ea_' + id).modal('hide');
+        return;
+    }
+    console.log('saveExtraActivities');
+    var ids = $("#ea_" + id + " input[type='checkbox']:checked").map(function () { return $(this).val(); }).get().join();
+    console.log(ids);
+
+    $.ajax({
+        url: "/ExtraActivities/Update/" + id + "?activityIds=" + ids,
+        data: ids,
+        method: "PUT",
+        cache: false,
+        success: function (data) {
+            if (data.Success) {
+                $.get("/Registrations/CurrentSetup/" + registrationid,
+                    function(data) {
+                        $("#setupContent").html(data);
+                    });
+            } else {
+                alert(data.Error);
+            }
+            $('#ea_' + id).modal('hide');
         }
     });
 }

@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-lg-8"><h3><b>Camp:</b></h3></div>
                         @{
-                            CampAmount = Model?.Campers?.Sum(s => s.Price) ?? 0;
+                            CampAmount = Model?.Campers?.Sum(s => s.Cancelled ? 0 : s.Price) ?? 0;
                         }
                         <div class="col-lg-3" style="text-align: right"><h3>@(CampAmount.ToString("C"))</h3></div>
                         <div class="col-lg-1"></div>
@@ -79,7 +79,7 @@
                     <div class="row">
                         <div class="col-lg-8"><h3><b>Extra Activities:</b></h3></div>
                         @{
-                            ExtraAmount = Model?.Campers?.Where(s => s.ExtraActivities.Any()).Sum(s => s.ExtraActivities.Sum(m => m.Price)) ?? 0;
+                            ExtraAmount = Model?.Campers?.Where(s => !s.Cancelled && s.ExtraActivities.Any()).Sum(s => s.ExtraActivities.Sum(m => m.Price)) ?? 0;
                         }
                         <div class="col-lg-3" style="text-align: right"><h3>@(ExtraAmount.ToString("C"))</h3></div>
                         <div class="col-lg-1"></div>
@@ -150,3 +150,12 @@
     </div>
 </section>
 
+<!-- Button trigger modal -->
+<script type="text/javascript">
+    $("span[data-userid]").each(function () {
+        var span = $(this);
+        $.get("@Url.Action("GetUserNameById", "Account")/" + $(this).data("userid"), function (data) {
+            span.html(data);
+        });
+    });
+</script>

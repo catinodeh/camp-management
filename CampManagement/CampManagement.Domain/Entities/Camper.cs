@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,6 +22,12 @@ namespace CampManagement.Domain.Entities
         public string Email { get; set; }
         [StringLength(14)]
         public string Phone { get; set; }
+        [StringLength(300)]
+        [DisplayName("Cabin Mates")]
+        public string CabinMates { get; set; }
+        [StringLength(500)]
+        [DisplayName("Physical Limitations")]
+        public string Limitations { get; set; }
         public bool Active { get; set; }
         [RegularExpression(@"^(M|F)$")]
         [StringLength(1)]

@@ -71,7 +71,7 @@
             </div>
         </section>
     </div>
-    <div class="col-sm-7">
+    <div class="col-sm-7" id="yearoffers">
         <section class="panel">
             <header class="panel-heading font-bold">
                 <div class="row">
@@ -85,6 +85,9 @@
                                 <option value="@DateTime.Now.AddYears(i * -1).Year">@DateTime.Now.AddYears(i * -1).Year</option>
                             }
                         </select>        
+                    </div>
+                    <div class="col-xs-8" style="padding-top: 7px">
+                        <span class="pull-right" id="offerTotal"></span>
                     </div>
                 </div>
             </header>
@@ -100,6 +103,12 @@
                         </tr>
                     </thead>
                     <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" style="text-align:right">Total:</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </section>
@@ -112,6 +121,7 @@
     <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
     <script>
         var oTable = null;
+        var offerTotal = 0;
         $("#Date").datepicker();
         $("#Date").on('changeDate', function (ev) {
             $(this).datepicker('hide');
@@ -143,6 +153,7 @@
                 {
                     "mData": "Amount",
                     "render": function (data, type, row) {
+                        offerTotal += parseFloat(row.Amount);
                         return '$' + row.Amount.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                     }
                 },
@@ -150,15 +161,46 @@
                 {
                     "mData": "OfferEntryId",
                     "render": function (data, type, row) {
-                        if (row.Notes != null)
-                            return '<button class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left" role="button" title="" data-content="' + row.Notes + '" data-original-title="Notes">Notes</button>';
+                        if (row.Notes != null && row.Notes.length > 0)
+                            return '<button class="btn btn-default has-popover" data-container="body" data-toggle="popover" data-placement="left" role="button" title="" data-content="' + row.Notes + '" data-original-title="Notes">Notes</button>';
                         return "";
                     }
                 }
             ],
             "initComplete": function () {
                 $('[data-toggle="popover"]').popover();
+            },
+            //"drawCallback": function (settings) {
+            //    $("#offerTotal").html("$ " + offerTotal.toFixed(2));
+            //}
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+                // Total over all pages
+                offerTotal = api
+                    .column(2)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer
+                $(api.column(4).footer()).html(
+                    '$' + offerTotal.toFixed(2)
+                );
             }
+        });
+
+        $('#yearoffers').popover({
+            selector: '.has-popover'
         });
     </script>
 }

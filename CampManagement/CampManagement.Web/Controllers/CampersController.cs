@@ -51,6 +51,7 @@ namespace CampManagement.Web.Controllers
                 camper.CreatedDate = camper.UpdatedDate = DateTime.Now;
                 camper.CreatedBy = User.Identity.GetUserId();
                 camper.UpdatedBy = User.Identity.GetUserId();
+                camper.Active = true;
                 db.Campers.Add(camper);
                 db.SaveChanges();
 

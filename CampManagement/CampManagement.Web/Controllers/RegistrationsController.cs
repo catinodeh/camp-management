@@ -134,7 +134,12 @@ namespace CampManagement.Web.Controllers
             //return RedirectToAction("CurrentSetup", new {registrationId = registrationId});
         }
 
-        public ActionResult CurrentSetup(Registration registration)
+        public ActionResult CurrentSetup(int id)
+        {
+            return View("CurrentSetup", GetById(id));
+        }
+
+        private ActionResult CurrentSetup(Registration registration)
         {
             return View("CurrentSetup", registration);
         }
@@ -198,6 +203,7 @@ namespace CampManagement.Web.Controllers
             
             if (camper != null)
             {
+                camper.UpdatedDate = DateTime.Now;
                 camper.CancelNotes = cancelNotes;
                 camper.Cancelled = true;
                 camper.CancelledBy = User.Identity.GetUserId();

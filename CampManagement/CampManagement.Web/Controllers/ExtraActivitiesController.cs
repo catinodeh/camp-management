@@ -34,8 +34,8 @@ namespace CampManagement.Web.Controllers
         {
             var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
             var thisCamperActivities = db.RegistrationCamperExtraActivities
-                                        .Where(e => e.RegistrationCamperId == id)
-                                        .ToList();
+                .Where(e => e.RegistrationCamperId == id)
+                .ToList();
             var activities = db.ExtraActivities.Where(ea => ea.CampSetupId == reg.CampSetupId).ToList();
 
             var obj = new UserActivity()
@@ -60,12 +60,18 @@ namespace CampManagement.Web.Controllers
                 extraActivity.CreatedBy = User.Identity.GetUserId();
                 db.ExtraActivities.Add(extraActivity);
                 db.SaveChanges();
-                return Json(new { Success = true });
+                return Json(new {Success = true});
             }
 
-            return Json(new { Success = false, Message = ModelState.Values.FirstOrDefault(v => v.Errors.Count > 0).Errors[0].ErrorMessage });
+            return
+                Json(
+                    new
+                    {
+                        Success = false,
+                        Message = ModelState.Values.FirstOrDefault(v => v.Errors.Count > 0).Errors[0].ErrorMessage
+                    });
         }
-        
+
         // POST: ExtraActivities/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -81,10 +87,16 @@ namespace CampManagement.Web.Controllers
                 activity.UpdatedDate = DateTime.Now;
 
                 db.SaveChanges();
-                return Json(new { Success = true });
+                return Json(new {Success = true});
             }
 
-            return Json(new { Success = false, Message = ModelState.Values.FirstOrDefault(v => v.Errors.Count > 0).Errors[0].ErrorMessage });
+            return
+                Json(
+                    new
+                    {
+                        Success = false,
+                        Message = ModelState.Values.FirstOrDefault(v => v.Errors.Count > 0).Errors[0].ErrorMessage
+                    });
         }
 
         [HttpPost]
@@ -100,6 +112,65 @@ namespace CampManagement.Web.Controllers
 
             db.SaveChanges();
             return Json(new {Success = true});
+        }
+
+        [HttpPut]
+        public JsonResult Update(int id, string activityIds)
+        {
+            try
+            {
+                int[] ids = null;
+                //Getting all current activities
+                var currentActivities = db.RegistrationCamperExtraActivities.Where(a => a.RegistrationCamperId == id).ToList();
+
+                if (string.IsNullOrEmpty(activityIds))
+                {
+                    for (int i = 0; i < currentActivities.Count(); i++)
+                    {
+                        db.RegistrationCamperExtraActivities.Remove(currentActivities[i]);
+                    }
+                }
+                else
+                {
+                    ids = activityIds?.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                    for (int i = 0; i < currentActivities.Count(); i++)
+                    {
+                        if (!ids.Contains(currentActivities[i].ActivityId))
+                        {
+                            //Ids passed don't have the given existing id
+                            db.RegistrationCamperExtraActivities.Remove(currentActivities[i]);
+                        }
+                    }
+
+                    for (int i = 0; i < ids.Length; i++)
+                    {
+                        int activityId = ids[i];
+                        if (!currentActivities.Any(a => a.ActivityId == ids[i]))
+                        {
+                            var currentPrice = (from rc in db.RegistrationCampers
+                                                join cs in db.CampSetups on rc.CampSetupId equals cs.CampSetupId
+                                                join ea in db.ExtraActivities on cs.CampSetupId equals ea.CampSetupId
+                                                where rc.RegistrationCamperId == id && ea.ActivityId == activityId
+                                                select ea.Price).FirstOrDefault();
+                            //If activity is not found, it's a new one...
+                            db.RegistrationCamperExtraActivities.Add(new RegistrationCamperExtraActivity()
+                            {
+                                ActivityId = ids[i],
+                                RegistrationCamperId = id,
+                                Price = currentPrice
+                            });
+                        }
+                    }
+                }
+
+                db.SaveChanges();
+
+                return Json(new {Success = true});
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Error = "Error when assigning extra activities.\n" + ex.Message });
+            }
         }
 
         protected override void Dispose(bool disposing)

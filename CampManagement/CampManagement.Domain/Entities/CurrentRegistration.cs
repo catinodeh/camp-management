@@ -35,6 +35,7 @@ namespace CampManagement.Domain.Entities
         public decimal Price { get; set; }
         public bool? Registered { get; set; }
         public decimal? TotalRegistration { get; set; }
+        public decimal? TotalActivities { get; set; }
         public decimal? TotalPayments { get; set; }
     }
 }

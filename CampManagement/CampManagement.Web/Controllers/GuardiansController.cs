@@ -53,6 +53,7 @@ namespace CampManagement.Web.Controllers
                 guardian.CreatedBy = User.Identity.GetUserId();
                 guardian.UpdatedBy = User.Identity.GetUserId();
                 guardian.EmailConfirmed = false;
+                guardian.Active = true;
                 db.Guardians.Add(guardian);
                 db.SaveChanges();
 
