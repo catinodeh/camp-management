@@ -41,4 +41,12 @@ namespace CampManagement.Domain.Entities
         public int Year { get; set; }
         public decimal Balance { get; set; }
     }
+
+    public class OfferUsed
+    {
+        public int RegistrationId { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+        public string CamperNames { get; set; }
+    }
 }

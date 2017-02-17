@@ -50,6 +50,7 @@
     </div>
 </div>
 
+<script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
 <script type="text/javascript">
     function refreshActivities(campsetupid) {
         $.ajax({
@@ -67,9 +68,35 @@
     }
     $(document)
         .ready(function () {
-            $("#frm .datepicker-input").datepicker();
-            $("#frm .datepicker-input").on('changeDate', function (ev) {
-                $(this).datepicker('hide');
+            //$("#frm .datepicker-input").datepicker();
+            //$("#frm .datepicker-input").on('changeDate', function (ev) {
+            //    $(this).datepicker('hide');
+            //});
+
+            $("#frm").find(".datepicker-input").each(function () {
+                $(this).datepicker({ dateFormat: 'mm/dd/yyyy' });
+                $(this).focus(function () {
+                    $(this).datepicker("show");
+                });
+
+                $(this).on('keydown', function (e) {
+                    var keyCode = e.keyCode || e.which;
+
+                    if (keyCode == 9) {
+                        //e.preventDefault(); 
+                        $(this).datepicker("hide");
+                    }
+                });
+
+                $(this).on('changeDate', function (ev) {
+                    $(this).datepicker('hide');
+                    //$($(this).attr("id").replace("StartDay", "#FromGrade").replace("EndDay", "#FromGrade")).focus();
+                    if ($(this).attr("id") === "StartDay" && $("#EndDay").val() === "") {
+                        $("#EndDay").val(moment($("#StartDay").val(), "MM/DD/YYYY").add(7, 'days').format("MM/DD/YYYY"));
+                        $("#EndDay").datepicker('update', $("#EndDay").val());
+                        $("#EndDay").focus();
+                    }
+                });
             });
 
             $("div.tab-pane").slice(1).find("input").prop("disabled", true);

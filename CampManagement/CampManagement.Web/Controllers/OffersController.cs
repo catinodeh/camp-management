@@ -58,6 +58,41 @@ namespace CampManagement.Web.Controllers
             return Json(totalOffer - totalPaymentsOffer, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetCampersUsingOffers(int year)
+        {
+            var entries = (from p in db.RegistrationPayments
+                           where p.PaymentTypeId == 4 && p.Date.Year == DateTime.Now.Year
+                           select new OfferUsed()
+                           {
+                               RegistrationId = p.RegistrationId,
+                               Amount = p.Amount,
+                               Date = p.Date
+                           }).ToList();
+
+            int[] registrationIds = entries.Select(r => r.RegistrationId).ToArray();
+
+            var registrations = (from r in db.Registrations
+                                join rc in db.RegistrationCampers on r.RegistrationId equals rc.RegistrationId
+                                join c in db.Campers on rc.CamperId equals c.CamperId
+                                where registrationIds.Contains(r.RegistrationId)
+                                select new
+                                {
+                                    r.RegistrationId,
+                                    c.FirstName,
+                                    c.LastName
+                                }).ToList();
+
+            foreach (var entry in entries)
+            {
+                entry.CamperNames = string.Join(",",
+                                    registrations.Where(r => r.RegistrationId == entry.RegistrationId)
+                                        .Select(c => $"{c.FirstName} {c.LastName}")
+                                        .ToArray());
+            }
+
+            return Json(entries, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetOfferEntries(int year)
         {
             var entries = (from o in db.Offers

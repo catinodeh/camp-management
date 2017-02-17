@@ -19,6 +19,12 @@ namespace CampManagement.Web.Controllers
         private readonly string SP_SEARCHPROCEDURE = "dbo.usp_Search @Criteria, @SearchType";
 
         [HttpGet]
+        public ActionResult Details(int id)
+        {
+            return View("CurrentSetupHorizontal", GetById(id));
+        }
+
+        [HttpGet]
         public ActionResult Finish(int id)
         {
             var reg = db.Registrations.FirstOrDefault(r => r.RegistrationId == id);

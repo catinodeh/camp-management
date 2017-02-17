@@ -12,10 +12,13 @@ namespace CampManagement.Domain.Entities
         public int CamperId { get; set; }
         [Required]
         [StringLength(50)]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
         [Required]
         [StringLength(50)]
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
+        [DisplayName("Birth Date")]
         public DateTime BirthDate { get; set; }
         [EmailAddress]
         [StringLength(50)]

@@ -75,7 +75,7 @@ namespace CampManagement.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                camper.Phone = camper.Phone != null ? camper.Phone.Replace("(", "").Replace(")", "").Replace("-", "") : null;
+                camper.Phone = camper.Phone != null ? camper.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "") : null;
                 camper.UpdatedBy = User.Identity.GetUserId();
                 camper.UpdatedDate = DateTime.Now;
                 db.Entry(camper).State = EntityState.Modified;

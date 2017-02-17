@@ -94,18 +94,42 @@
             <div class="table-responsive">
                 <table class="table table-striped m-b-none" data-ride="datatables" id="mytable">
                     <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Added by</th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Added by</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="4" style="text-align:right">Total:</th>
+                        <th></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-12" id="campsoffers">
+        <section class="panel">
+            <header class="panel-heading font-bold">History of offers</header>
+            <div class="table-responsive">
+                <table class="table table-striped m-b-none" data-ride="datatables" id="mytable2">
+                    <thead>
+                    <tr>
+                        <th>Registration</th>
+                        <th>Date</th>
+                        <th>Camper(s)</th>
+                        <th>Amount</th>
+                    </tr>
                     </thead>
                     <tbody></tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="4" style="text-align:right">Total:</th>
+                            <th colspan="3" style="text-align:right">Total:</th>
                             <th></th>
                         </tr>
                     </tfoot>
@@ -121,6 +145,9 @@
     <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
     <script>
         var oTable = null;
+        var oTable2 = null;
+
+        var campOfferTotal = 0;
         var offerTotal = 0;
         $("#Date").datepicker();
         $("#Date").on('changeDate', function (ev) {
@@ -131,9 +158,14 @@
             return '@Url.Action("GetOfferEntries", "Offers")/?year=' + $("#Year").val();    
         }
 
+        function getUrl2() {
+            return '@Url.Action("GetCampersUsingOffers", "Offers")/?year=' + $("#Year").val();
+        }
+
         $("#Year")
             .change(function() {
                 oTable.ajax.url(getUrl()).load();
+                oTable2.ajax.url(getUrl2()).load();
             });
 
         oTable = $("#mytable").DataTable({
@@ -195,6 +227,62 @@
                 // Update footer
                 $(api.column(4).footer()).html(
                     '$' + offerTotal.toFixed(2)
+                );
+            }
+        });
+
+        oTable2 = $("#mytable2").DataTable({
+            "bProcessing": true,
+            "sAjaxSource": getUrl2(),
+            "sAjaxDataProp": "",
+            "bLengthChange": false,
+            "bPaginate": false,
+            "bFilter": false, 
+            "bInfo": false,
+            //"sPaginationType": "full_numbers",
+            "aoColumns": [
+                {
+                    "mData": "RegistrationId",
+                    "render": function (data, type, row) {
+                        return "<a href='@Url.Action("Index","Registrations")/" + row.RegistrationId + "'>" + row.RegistrationId + "</a>";
+                    }
+                },
+                {
+                    "mData": "Date",
+                    "render": function (data, type, row) {
+                        return moment(row.Date).format("MM/DD/YYYY");
+                    }
+                },
+                { "mData": "CamperNames" },
+                {
+                    "mData": "Amount",
+                    "render": function (data, type, row) {
+                        return '$' + row.Amount.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                    }
+                }
+            ]
+            ,"footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+                //// Total over all pages
+                campOfferTotal = api
+                    .column(3)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                //// Update footer
+                $(api.column(3).footer()).html(
+                    '$' + campOfferTotal.toFixed(2)
                 );
             }
         });

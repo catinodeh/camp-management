@@ -110,15 +110,15 @@
                 </div>
             </section>
         }        
-        <section class="panel" id="ea@(Model == null ? 0 : Model.CampSetupId)">
+        <section class="panel" id="ea@(Model?.CampSetupId ?? 0)">
             <header class="panel-heading font-bold">Extra Activities</header>
             @if (Model?.Year == DateTime.Now.Year)
             {
-                Html.RenderAction("Index", "ExtraActivities", new {id = Model == null ? 0 : Model.CampSetupId});
+                Html.RenderAction("Index", "ExtraActivities", new {id = Model?.CampSetupId ?? 0});
             }
             else
             {
-                Html.RenderAction("Index", "ExtraActivities", new { id = Model == null ? 0 : Model.CampSetupId, readOnly = true });
+                Html.RenderAction("Index", "ExtraActivities", new { id = Model?.CampSetupId ?? 0, readOnly = true });
             }
         </section>
     </div>

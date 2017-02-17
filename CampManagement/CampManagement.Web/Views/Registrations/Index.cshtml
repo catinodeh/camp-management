@@ -17,7 +17,7 @@
         <section class="panel">
             <header class="panel-heading font-bold">List of Registrations</header>
             <div class="table-responsive">
-                <table class="table table-striped m-b-none" data-ride="datatables" id="mytable">
+                <table class="table table-striped" data-ride="datatables" id="mytable">
                     <thead>
                     <tr>
                         <th>#</th>
@@ -27,8 +27,11 @@
                         }
                         <th>CamperName</th>                        
                         <th>Guardian</th>
-                        <th>Email</th>
-                        <th>Phone</th>
+                        @if (!Request.Browser.IsMobileDevice)
+                        {
+                            <th>Email</th>
+                            <th>Phone</th>
+                        }
                         <th>Total</th>
                         <th>Balance</th>
                         <th></th>
@@ -45,36 +48,46 @@
     <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
     <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
     <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+    <script src="@Url.Content("~/js/clipboard.min.js")"></script>
 
     <script language="javascript">
         function format2(n, currency) {
             return currency + " " + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
         }
 
+        var clip = new Clipboard('#mytable tbody input,select[data-clipboard-text]');
+        clip.on('success',
+            function (e) {
+                $(e.trigger).fadeOut().fadeIn();
+            });
+
+        var oTable = null;
         $('[data-ride="datatables"]')
             .each(function() {
-                var oTable = $(this)
+                oTable = $(this)
                     .dataTable({
+                        "responsive": true,
                         "paging": false,
                         "bProcessing": true,
                         @if (Request["campId"] == "0" || Request["campId"] == null)
                         {
                             <text>
-                            "order": [[1, "desc"]],
+                                "order": [[1, "desc"]],
                             </text>
                         }
                         "sAjaxSource":
                             '@Url.Action("ThisYearRegistrations", "Registrations")?campId=@(Request["campId"] == null ? "0" : Request["campId"])',
                         "sAjaxDataProp": "",
                         "sDom":
-                            "<'row'<'col-xs-3'l><'col-xs-4'<'#dt_camps.dataTables_length'>><'col-xs-5'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                            "<'row'<'col-xs-7'<'#dt_camps.dataTables_length'>><'col-xs-5'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
                         "sPaginationType": "full_numbers",
                         "aoColumns": [
                             {
                                 "mData": "RegistrationId",
-                                "width": "50px",
-                                "render": function (data, type, row) {
-                                    return "R" + row.RegistrationId;
+                                "class": "details-control",
+                                "width": "55px",
+                                "render": function(data, type, row) {
+                                    return "<span><i style='display:inline' class='fa fa-plus-square' id='reg" + row.RegistrationId + "'></i>&nbsp;R" + row.RegistrationId + "</span>";
                                 }
                             },
                             @if (Request["campId"] == "0" || Request["campId"] == null)
@@ -84,43 +97,111 @@
                                 </text>
                             }
                             { "mData": "CamperName" },
-
                             { "mData": "GuardianName" },
-                            { "mData": "Email" },
+                            @if (!Request.Browser.IsMobileDevice)
                             {
-                                "mData": "Phone",
-                                "render": function(data, type, row) {
-                                    return formatPhoneNumber(row.Phone);
-                                }
-                            },
+                                <text>
+                                    {
+                                        "mData": "Email",
+                                        "sorting": false,
+                                        "render": function(data, type, row) {
+                                            if (row.EmailConfirmed === true) {
+                                                return "<span>" +
+                                                    row.Email +
+                                                    "&nbsp;<i style='color:green' class='fa fa-check-circle'></i></span>";
+                                            }
+                                            return "<span>" +
+                                                row.Email +
+                                                "&nbsp;<i style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i></span>";
+                                        }
+                                    },
+                                    {
+                                        "mData": "Phone",
+                                        "sorting": false,
+                                        "render": function(data, type, row) {
+                                            return formatPhoneNumber(row.Phone);
+                                        }
+                                    },
+                                </text>
+                            }
                             {
                                 "mData": "Price",
-                                "render": function (data, type, row) {
-                                    return format2(row.Price + (row.TotalActivities == null ? 0 : row.TotalActivities), '$');
+                                "render": function(data, type, row) {
+                                    return format2(row.Price + (row.TotalActivities == null ? 0 : row.TotalActivities),
+                                        '$');
                                 }
                             },
                             {
                                 "mData": "TotalRegistration",
-                                "render": function (data, type, row) {
+                                "render": function(data, type, row) {
                                     if (row.CompletedDate == null) return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-";
                                     if (row.TotalRegistration - row.TotalPayments > 0)
-                                        return "<a class='balance' href='@Url.Action("Manage","Payments")/" + row.RegistrationId + "'>" + format2(row.TotalRegistration - row.TotalPayments, '$') + "</a>";
+                                        return "<a class='balance' href='@Url.Action("Manage", "Payments")/" +
+                                            row.RegistrationId +
+                                            "'>" +
+                                            format2(row.TotalRegistration - row.TotalPayments, '$') +
+                                            "</a>";
                                     return format2(row.TotalRegistration - row.TotalPayments, '$');
                                 }
                             },
                             {
                                 "mData": "RegistrationId",
+                                "sorting": false,
                                 "render": function(data, type, row) {
-                                    return "<a href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                                    return "<a href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" +
+                                        row.RegistrationId +
+                                        "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
                                 }
                             }
                         ]
+                    });
+
+                // Array to track the ids of the details displayed rows
+                var detailRows = [];
+
+                $('#mytable tbody')
+                    .on('click',
+                        'tr td.details-control',
+                        function() {
+                            var tr = $(this).closest('tr');
+                            var row = oTable.api().row(tr);
+                            var idx = $.inArray(tr.attr('id'), detailRows);
+
+                            if (row.child.isShown()) {
+                                tr.removeClass('details');
+                                $("#reg" + row.data().RegistrationId).removeClass("fa-minus-square-o").addClass("fa-plus-square");
+                                row.child.hide();
+
+                                // Remove from the 'open' array
+                                detailRows.splice(idx, 1);
+                            } else {
+                                tr.addClass('details');
+                                $.get("@Url.Action("Details", "Registrations")/" + row.data().RegistrationId,
+                                    function (data) {
+                                        $("#reg" + row.data().RegistrationId).removeClass("fa-plus-square").addClass("fa-minus-square-o");
+                                        row.child(data).show();
+                                    });
+
+                                // Add to the 'open' array
+                                if (idx === -1) {
+                                    detailRows.push(tr.attr('id'));
+                                }
+                            }
+                        });
+
+                // On each draw, loop over the `detailRows` array and show any child rows
+                oTable.on('draw',
+                    function() {
+                        $.each(detailRows,
+                            function(i, id) {
+                                $('#' + id + ' td.details-control').trigger('click');
+                            });
                     });
             });
 
         $("#dt_camps")
             .css("text-align", "center")
-            .html("<form action='@Url.Action("Index")' id='frmRegistrations'><select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></form>");
+            .html("<form action='@Url.Action("Index")' id='frmRegistrations'><label>&nbsp;<select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></label></form>");
 
         $.ajax({
             url: "@Url.Action("GetThisYearSetups", "CampSetups")",
@@ -130,7 +211,10 @@
                 $(data)
                     .each(function(i, camp) {
                         $("#camps")
-                            .append("<option value='" + camp.CampId + "' " + (camp.CampId == '@(Request["campId"])'
+                            .append("<option value='" +
+                                camp.CampId +
+                                "' " +
+                                (camp.CampId == '@(Request["campId"])'
                                     ? "selected"
                                     : "") +
                                 ">" +

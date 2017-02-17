@@ -52,6 +52,15 @@ namespace CampManagement.Web.Controllers
                 else
                     list.Add(model);
             }
+            else
+            {
+                if (!list.Any(m => m.Year == thisYear))
+                    list.Add(new CampSetup()
+                    {
+                        Year = thisYear,
+                        CampSetupId = 0
+                    });
+            }
 
             ViewData["CampName"] = db.Camps.FirstOrDefault(c => c.CampId == id).Name;
 

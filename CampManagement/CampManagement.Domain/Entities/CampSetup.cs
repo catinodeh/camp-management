@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -16,14 +17,19 @@ namespace CampManagement.Domain.Entities
         public int CampId { get; set; }
         public int Year { get; set; }
         [Required]
+        [DisplayName("Start Day")]
         public System.DateTime StartDay { get; set; }
         [Required]
+        [DisplayName("End Day")]
         public System.DateTime EndDay { get; set; }
         [Range((double) 1.0, 1000, ErrorMessage = "Price must be between $1 and $1000")]
+        [DisplayName("Current Price")]
         public decimal CurrentPrice { get; set; }
         [Range(1,12)]
+        [DisplayName("From Grade")]
         public int FromGrade { get; set; }
         [Range(1, 12)]
+        [DisplayName("To Grade")]
         public int ToGrade { get; set; }
         [Range(1, 1000)]
         public int Spaces { get; set; }

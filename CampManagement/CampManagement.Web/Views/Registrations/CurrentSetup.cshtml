@@ -38,7 +38,7 @@
                     {
                         var viewdatas = new ViewDataDictionary();
 
-                        if (registration.Cancelled != null || ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Payments")
+                        if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Payments")
                         {
                             viewdatas.Add(new KeyValuePair<string, object>("readonly", true));
                         }

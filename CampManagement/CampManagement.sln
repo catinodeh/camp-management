@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CampManagement.Data", "Camp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CampManagement.Web", "CampManagement.Web\CampManagement.Web.csproj", "{33B0042B-692E-4F4E-A2FC-FEBE2146072F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CampManagement.Email", "CampManagement.Email\CampManagement.Email.csproj", "{DE6232B1-DF83-4D22-B451-EBDB1249CE51}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{33B0042B-692E-4F4E-A2FC-FEBE2146072F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33B0042B-692E-4F4E-A2FC-FEBE2146072F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33B0042B-692E-4F4E-A2FC-FEBE2146072F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE6232B1-DF83-4D22-B451-EBDB1249CE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE6232B1-DF83-4D22-B451-EBDB1249CE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE6232B1-DF83-4D22-B451-EBDB1249CE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE6232B1-DF83-4D22-B451-EBDB1249CE51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
