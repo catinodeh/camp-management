@@ -18,9 +18,46 @@ namespace CampManagement.Web.Controllers
         private CampManagementDbContext db = new CampManagementDbContext();
         private readonly string SP_SEARCHPROCEDURE = "dbo.usp_Search @Criteria, @SearchType";
 
-        [HttpGet]
-        public ActionResult Details(int id)
+        [HttpPost]
+        public JsonResult ConfirmRegistration(int id)
         {
+            var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
+            reg.Registered = true;            
+            reg.UpdatedBy = User.Identity.GetUserId();
+            reg.RegisteredBy = reg.UpdatedBy;
+            reg.UpdatedDate = DateTime.Now;
+            db.SaveChanges();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult ConfirmCancellation(int id)
+        {
+            var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
+            reg.UpdatedBy = User.Identity.GetUserId();
+            reg.CancelFinalized = DateTime.Now;
+            reg.UpdatedDate = reg.CancelFinalized.Value;
+            db.SaveChanges();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult SaveComments(int id, string notes)
+        {
+            var reg = db.Registrations.FirstOrDefault(r => r.RegistrationId == id);
+            reg.Notes = notes;
+            reg.UpdatedBy = User.Identity.GetUserId();
+            reg.UpdatedDate = DateTime.Now;
+            db.SaveChanges();
+            return Json(true);
+        }
+
+        [HttpGet]
+        public ActionResult Details(int id,int? camperId = null)
+        {
+            var userid = User.Identity.GetUserId();
+            ViewData["user"] = db.Users.FirstOrDefault(u => u.Id == userid)?.UserName;
+            ViewData["camperid"] = camperId;
             return View("CurrentSetupHorizontal", GetById(id));
         }
 
@@ -62,7 +99,7 @@ namespace CampManagement.Web.Controllers
                 .ThenBy(r => r.RegistrationId)
                 .ThenBy(r => r.LastName);
 
-            return Json(query.ToList(), JsonRequestBehavior.AllowGet);
+            return Json(query.OrderBy(r => r.RegistrationId).ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

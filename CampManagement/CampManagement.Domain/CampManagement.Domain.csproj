@@ -100,7 +100,9 @@
     <Compile Include="Entities\CampSetup.cs" />
     <Compile Include="Entities\CurrentRegistration.cs" />
     <Compile Include="Entities\RegistrationCamperExtraActivities.cs" />
+    <Compile Include="Entities\TemplateContact.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Enum\EmailTemplate.cs" />
     <Compile Include="Exceptions\BusinessException.cs" />
     <Compile Include="Entities\ExtraActivity.cs" />
     <Compile Include="Entities\Guardian.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Identity\IdentityModels.cs" />
     <Compile Include="Identity\ManageViewModels.cs" />
     <Compile Include="Entities\Offer.cs" />
+    <Compile Include="Models\EmailModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\Registration.cs" />
     <Compile Include="Entities\RegistrationCamper.cs" />

@@ -28,6 +28,13 @@ namespace CampManagement.Web.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public JsonResult SendConfirmationEmail(int id)
+        {
+            SendEmailConfirmation(db.Guardians.Find(id));
+            return Json(true);
+        }
+
         public List<Guardian> GetActives()
         {
             return db.Guardians.OrderBy(g => g.Name).ToList();
@@ -58,12 +65,7 @@ namespace CampManagement.Web.Controllers
                 db.SaveChanges();
 
                 if (!string.IsNullOrEmpty(guardian.Email))
-                    SendWithUs.Send(SendWithUs.TEMPLATE_NewGuardian, guardian.Name, guardian.Email, new
-                    {
-                        name = guardian.Name,
-                        button_text = "Confirmar!",
-                        url = $"{Request.Url.ToString().Replace(Request.Url.LocalPath, "") + Url.Action("ConfirmEmail")}/{guardian.RowGuid}"
-                    });
+                    SendEmailConfirmation(guardian);
 
                 if (Request["autoclose"] == "1")
                 {
@@ -76,13 +78,37 @@ namespace CampManagement.Web.Controllers
             return View("Manage", guardian);
         }
 
+        private void SendEmailConfirmation(Guardian guardian)
+        {
+            SendWithUs.Send(SendWithUs.TEMPLATE_NewGuardian, guardian.Name, guardian.Email, new
+            {
+                name = guardian.Name,
+                button_text = "Confirmar!",
+                url =
+                $"{Request.Url.ToString().Replace(Request.Url.LocalPath, "") + Url.Action("ConfirmEmail")}/{guardian.RowGuid}"
+            });
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ConfirmEmail(Guid id)
         {
             var guardian = db.Guardians.FirstOrDefault(g => g.RowGuid == id);
             if (guardian != null)
+            {
                 guardian.EmailConfirmed = true;
+                guardian.UpdatedDate = DateTime.Now;
+                var otherEmails =
+                    db.Guardians.Where(
+                            e => e.Email == guardian.Email && (e.EmailConfirmed == false || e.EmailConfirmed == null))
+                        .ToList();
+
+                foreach (var otherEmail in otherEmails)
+                {
+                    otherEmail.EmailConfirmed = true;
+                    otherEmail.UpdatedDate = DateTime.Now;
+                }
+            }
 
             db.SaveChanges();
 

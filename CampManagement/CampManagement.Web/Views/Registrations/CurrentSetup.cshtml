@@ -150,12 +150,8 @@
     </div>
 </section>
 
-<!-- Button trigger modal -->
-<script type="text/javascript">
-    $("span[data-userid]").each(function () {
-        var span = $(this);
-        $.get("@Url.Action("GetUserNameById", "Account")/" + $(this).data("userid"), function (data) {
-            span.html(data);
+<script>
+        $(document).ready(function(){
+            fillUsers();
         });
-    });
 </script>

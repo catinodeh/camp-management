@@ -33,13 +33,17 @@ namespace CampManagement.Web.Controllers
             var reg = new RegistrationsController().GetById(model.RegistrationId);
 
             if (ModelState.IsValid)
-            {                
+            {
                 var regAmount = reg.GetTotal;
-                var amountPaid = db.RegistrationPayments.Where(p => p.RegistrationId == model.RegistrationId).ToList().Sum(p => p.Amount);
+                var amountPaid =
+                    db.RegistrationPayments.Where(p => p.RegistrationId == model.RegistrationId)
+                        .ToList()
+                        .Sum(p => p.Amount);
 
                 if (amountPaid + model.Amount > regAmount)
                 {
-                    ModelState.AddModelError("", $"Payment cannot exceed the Registration balance of {regAmount - amountPaid:C}");
+                    ModelState.AddModelError("",
+                        $"Payment cannot exceed the Registration balance of {regAmount - amountPaid:C}");
                 }
                 else
                 {
@@ -50,7 +54,18 @@ namespace CampManagement.Web.Controllers
                     return View("Manage", reg);
                 }
             }
+            else
+            {
+                if (ModelState.Any(m => m.Value.Errors.Count > 0))
+                {
+                    var errorMessage = ModelState.FirstOrDefault(e => e.Value.Errors.Count > 0).Value;
+                    ModelState.AddModelError("", errorMessage.Errors[0].ErrorMessage);
+                }
+            }
 
+            TempData["Date"] = model.Date == default(DateTime) ? null : model.Date.ToString("dd/MM/yyyy");
+            TempData["Amount"] = model.Amount == 0 ? null : model.Amount.ToString();
+            TempData["Notes"] = model.Notes;
             return View(reg);
         }
 

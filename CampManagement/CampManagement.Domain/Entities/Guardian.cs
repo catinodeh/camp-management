@@ -40,4 +40,16 @@ namespace CampManagement.Domain.Entities
         public string UpdatedBy { get; set; }
         public Guid RowGuid { get; set; }
     }
+
+    [Table("vw_Guardian")]
+    public class GuardianEmail
+    {
+        [Key]
+        public int GuardianId { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public Guid RowGuid { get; set; }
+    }
 }

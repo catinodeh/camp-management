@@ -2808,3 +2808,8 @@ fieldset[disabled] .btn-gplus.active {
 .balance {
     color: red;
 }
+
+.dt-center {
+    text-align: center;
+}
+

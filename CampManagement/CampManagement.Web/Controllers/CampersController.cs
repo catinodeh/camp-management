@@ -16,7 +16,7 @@ namespace CampManagement.Web.Controllers
     public class CampersController : Controller
     {
         private CampManagementDbContext db = new CampManagementDbContext();
-
+        
         // GET: Guardians
         public ActionResult Manage(int? id = null)
         {
@@ -47,7 +47,7 @@ namespace CampManagement.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                camper.Phone = camper.Phone != null ? camper.Phone.Replace("(", "").Replace(")", "").Replace("-", "") : null;
+                camper.Phone = camper.Phone != null ? camper.Phone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "") : null;
                 camper.CreatedDate = camper.UpdatedDate = DateTime.Now;
                 camper.CreatedBy = User.Identity.GetUserId();
                 camper.UpdatedBy = User.Identity.GetUserId();

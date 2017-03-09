@@ -12,11 +12,12 @@ namespace CampManagement.Domain.Entities
         [Key]
         public int PaymentId { get; set; }
         public int RegistrationId { get; set; }
-        [Range(1, 10)]
+        [Range(1, 10, ErrorMessage = "Please provide the payment type")]
         public int PaymentTypeId { get; set; }
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        [Range(1, Double.MaxValue, ErrorMessage = "Amount should be greater than $0")]
         public decimal Amount { get; set; }
         [StringLength(400)]
         public string Notes { get; set; }
@@ -35,11 +36,6 @@ namespace CampManagement.Domain.Entities
                 {
                     yield return new ValidationResult("Payments need to be in " + DateTime.Now.Year);
                 }
-            }
-
-            if (Amount == 0)
-            {
-                yield return new ValidationResult("Amount need to be greater than $0");
             }
         }
     }

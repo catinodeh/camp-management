@@ -231,6 +231,7 @@
     <Compile Include="Controllers\CampersController.cs" />
     <Compile Include="Controllers\CampsController.cs" />
     <Compile Include="Controllers\CampSetupsController.cs" />
+    <Compile Include="Controllers\CommunicationController.cs" />
     <Compile Include="Controllers\ExtraActivitiesController.cs" />
     <Compile Include="Controllers\GuardiansController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -242,6 +243,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\JsonExtensionMethod.cs" />
+    <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Models\DefaultJsonReturn.cs" />
     <Compile Include="Models\RegistrationModel.cs" />
     <Compile Include="Models\SendWithUs.cs" />
@@ -324,6 +327,9 @@
     <Content Include="lib\moment\moment.min.js" />
     <Content Include="lib\select2\select2.css" />
     <Content Include="lib\select2\select2.min.js" />
+    <Content Include="lib\wysiwyg\bootstrap-wysiwyg.js" />
+    <Content Include="lib\wysiwyg\demo.js" />
+    <Content Include="lib\wysiwyg\jquery.hotkeys.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="fonts\fontawesome-webfont.eot" />
@@ -422,15 +428,17 @@
     <Content Include="Views\Campers\Detail.cshtml" />
     <Content Include="Views\Registrations\CurrentSetup.cshtml" />
     <Content Include="Views\Payments\Manage.cshtml" />
-    <Content Include="Views\Payments\Create.cshtml" />
     <Content Include="Views\ExtraActivities\ExtraActivities.cshtml" />
     <Content Include="Views\Guardians\EmailConfirmed.cshtml" />
     <Content Include="Views\Registrations\CurrentSetupHorizontal.cshtml" />
     <Content Include="Views\Guardians\DetailForms.cshtml" />
+    <Content Include="Views\Campers\DetailForms.cshtml" />
+    <Content Include="Views\Communication\AllGuardians.cshtml" />
+    <Content Include="Views\Communication\Contacts.cshtml" />
+    <Content Include="Views\Shared\_LayoutCommunication.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

@@ -21,7 +21,7 @@ namespace CampManagement.Web.Models
             if (ConfigurationManager.AppSettings["debug"] != null)
             {
                 recipientName = "Thiago";
-                recipientEmail = "thiagodasilva@gmail.com";
+                recipientEmail = "thiago.dasilva@gmail.com";
             }
 
             // Let's create a request

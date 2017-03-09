@@ -16,6 +16,7 @@ namespace CampManagement.Data
         public DbSet<Camper> Campers { get; set; }
         public DbSet<CampSetup> CampSetups { get; set; }
         public DbSet<ExtraActivity> ExtraActivities { get; set; }
+        public DbSet<GuardianEmail> GuardianEmails { get; set; }        
         public DbSet<Guardian> Guardians { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<OfferEntry> OfferEntries { get; set; }

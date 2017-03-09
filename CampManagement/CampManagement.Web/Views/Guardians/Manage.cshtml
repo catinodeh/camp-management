@@ -49,7 +49,7 @@
                                             if (Model?.EmailConfirmed == true)
                                             { <i style="color:green" class='fa fa-check-circle'></i>  }
                                             else
-                                            { <i style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i> }
+                                            { <i data-guardianid="@Model.GuardianId" style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i> }
                                         }                                        
                                         @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "my@email.com" } })
                                     </div>
@@ -103,8 +103,10 @@
                                         <div class="checkbox">
                                             <label class="checkbox-custom">
                                                 @Html.CheckBoxFor(model => model.Active)
-                                                    <i class="fa fa-square-o checked"></i> Active ?
+                                                <i class="fa fa-square-o checked"></i> Active ?
                                             </label>
+                                            <br/>
+                                            <span class="text-sm">** Guardian is active if he/she is still sending children to camp</span>
                                         </div>
                                     </div>
                                 }
