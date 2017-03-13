@@ -14,14 +14,14 @@ namespace CampManagement.Web.Models
         public static string TEMPLATE_NewGuardian = ConfigurationManager.AppSettings["sendwithus_newguardian"];
         public static string TEMPLATE_Registration = ConfigurationManager.AppSettings["sendwithus_registration"];
 
-        public static void Send(string templateid, string recipientName, string recipientEmail, object templateData)
+        public static void Send(string templateid, string recipientName, string recipientEmail, object templateData, string cc = null)
         {
             string api_key = ConfigurationManager.AppSettings["sendwithus_key"];
 
             if (ConfigurationManager.AppSettings["debug"] != null)
             {
                 recipientName = "Thiago";
-                recipientEmail = "thiago.dasilva@gmail.com";
+                recipientEmail = "mymwps@gmail.com";
             }
 
             // Let's create a request
@@ -39,6 +39,7 @@ namespace CampManagement.Web.Models
                 string json = new JavaScriptSerializer().Serialize(new
                 {
                     template = templateid,
+                    cc,
                     recipient = new {
                         name = recipientName,
                         address = recipientEmail

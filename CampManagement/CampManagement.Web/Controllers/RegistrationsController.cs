@@ -22,7 +22,7 @@ namespace CampManagement.Web.Controllers
         public JsonResult ConfirmRegistration(int id)
         {
             var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
-            reg.Registered = true;            
+            reg.Registered = true;
             reg.UpdatedBy = User.Identity.GetUserId();
             reg.RegisteredBy = reg.UpdatedBy;
             reg.UpdatedDate = DateTime.Now;
@@ -53,7 +53,7 @@ namespace CampManagement.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Details(int id,int? camperId = null)
+        public ActionResult Details(int id, int? camperId = null)
         {
             var userid = User.Identity.GetUserId();
             ViewData["user"] = db.Users.FirstOrDefault(u => u.Id == userid)?.UserName;
@@ -71,7 +71,27 @@ namespace CampManagement.Web.Controllers
 
             db.SaveChanges();
 
+            SendConfirmation(reg);
+
             return RedirectToAction("Index");
+        }
+
+        private void SendConfirmation(Registration reg)
+        {
+            try
+            {
+                var guardian = db.Guardians.Find(reg.GuardianId);
+                if (guardian.EmailConfirmed != true)
+                {
+                    //Guardian email not yet confirmed....
+                    var guardianCTR = new GuardiansController();
+                    guardianCTR.SendEmailConfirmation(guardian, Request);
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
         [HttpGet]
@@ -83,16 +103,33 @@ namespace CampManagement.Web.Controllers
 
             db.SaveChanges();
 
+            SendConfirmation(reg);
+
             return RedirectToAction("Manage","Payments", new { id = id });
         }
 
         [HttpGet]
-        public JsonResult ThisYearRegistrations(int campId)
+        public JsonResult ThisYearRegistrations(int? campId = null,int? filter = null)
         {
             var query = db.CurrentRegistrations.AsQueryable();
 
             if (campId > 0)
                 query = query.Where(r => r.CampId == campId);
+
+            if (filter > 0)
+            {
+                if (filter == 1)
+                    query = query.Where(r => r.Cancelled == false && r.Registered == true && r.CompletedDate.HasValue);
+
+                if (filter == 2)
+                    query = query.Where(r => r.Cancelled == false && r.Registered == true && !r.CompletedDate.HasValue);
+
+                if (filter == 3)
+                    query = query.Where(r => r.Cancelled == true && r.CancelFinalized.HasValue);
+
+                if (filter == 4)
+                    query = query.Where(r => r.Cancelled == true && !r.CancelFinalized.HasValue);
+            }
 
             query = query
                 .OrderBy(r => r.CampId)
@@ -308,6 +345,9 @@ namespace CampManagement.Web.Controllers
                 if (registrationCamper != null)
                     return Json(new DefaultJsonReturn() { Success = false, Message = "Camper already added to this registration!" });
 
+                if (db.RegistrationCampers.Any(c => c.CamperId == camperId && c.RegistrationId != registrationId && c.CreatedDate.Year == DateTime.Now.Year))
+                    return Json(new DefaultJsonReturn() { Success = false, Message = "Camper is already in another registration!" });
+
                 db.RegistrationCampers.Add(new RegistrationCamper()
                 {
                     CampSetupId = campSetupId.CampSetupId,
@@ -328,6 +368,7 @@ namespace CampManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                System.IO.File.WriteAllText(DateTime.Now.ToString("ddMMyyyyHHmmss")+".log", ex.Message);
                 return Json(new DefaultJsonReturn() { Success = false, Message = "Oops...There was an error trying to add this camper!" });
             }         
             

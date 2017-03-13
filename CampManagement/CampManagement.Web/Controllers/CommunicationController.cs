@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -39,7 +40,8 @@ namespace CampManagement.Web.Controllers
                             pic_id = new Random().Next(1, 15),
                             text = model.Body.ReflectionReplace<GuardianEmail>(guardian),
                             url = $"{Request.Url.ToString().Replace(Request.Url.LocalPath, "") + Url.Action("ConfirmEmail", "Guardians")}/{guardian.RowGuid}"
-                        });
+                        },
+                        ConfigurationManager.AppSettings["sendwithus_cc"]);
 
                         emails.Add(guardian.Email);
                     }

@@ -38,7 +38,7 @@
                     </tr>
                     </thead>
                     <tbody></tbody>
-                </table>
+                </table> 
             </div>
         </section>
     </div>
@@ -85,7 +85,7 @@
                             "order": [[0, "asc"]],
                             </text>
                         }
-                        "sAjaxSource": '@Url.Action("ThisYearRegistrations", "Registrations")?campId=@(Request["campId"] == null ? "0" : Request["campId"])',
+                        "sAjaxSource": '@Url.Action("ThisYearRegistrations", "Registrations")@Html.Raw(Request.Url.Query)',
                         "sAjaxDataProp": "",
                         "sDom": "<'row'<'col-xs-4'<'#dt_camps.dataTables_length'>><'col-xs-4'<'#rFilters.dataTables_length'>><'col-xs-4'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
                         "sPaginationType": "full_numbers",
@@ -218,16 +218,24 @@
                     });
             });
 
+        //Adding form...
+        $("#mytable_wrapper .row").first().wrap("<form action='@Url.Action("Index")' id='frmRegistrations'>");
+
         $("#rFilters")
             .css("text-align", "center")
-            .html("<select class='form-control'><option>- Filters -</option><option value='1'>Not Finalized</option><option value='2'>Cancelled not finished</option><option value='3'>Confirmed</option></select>")
+            .html("<select class='form-control' name='filter' id='filter'>" +
+                 "<option value='0'>- No Filter -</option>" +
+                 "<option value='1'>Registration Completed</option>" +
+                 "<option value='2'>Registered not Finalized</option>" +
+                 "<option value='3'>Cancelled Completed</option>" +
+                 "<option value='4'>Cancelled not Finalized</option></select>")
             .find("select")
+            .val('@(String.IsNullOrEmpty(Request["filter"]) ? "0" : Request["filter"])')
             .css("width", "initial");
-
 
         $("#dt_camps")
             .css("text-align", "center")
-            .html("<form action='@Url.Action("Index")' id='frmRegistrations'><label><select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></label></form>");
+            .html("<label><select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></label>");
 
         $.ajax({
             url: "@Url.Action("GetThisYearSetups", "CampSetups")",
@@ -252,7 +260,7 @@
             }
         });
 
-        $("#camps")
+        $("#camps,#filter")
             .on("change",
                 function () {
                     $("#frmRegistrations").submit();

@@ -2,7 +2,7 @@
 var registrationid = this_js_script.attr('data-registrationid');
 
 function doSearch() {
-    $("#searchResult").empty();
+    $("#searchResult").empty();    
 
     $.ajax({
         url: '/Registrations/Search?criteria=' + $("#txtCriteria").val(),
@@ -19,11 +19,14 @@ function doSearch() {
 }
 
 function addGuardian(guardianid, callback) {
+    $("#setupContent").loading({ message : "Adding Guardian..." });
+
     $.ajax({
         url: '/Registrations/' + registrationid + '/AddGuardian/' + guardianid,
         method: 'POST',
         cache: false,
         success: function (data, status, xhr, dataType) {
+            $("#setupContent").loading('stop');
             if (typeof(data) == "object") {
                 alert(data.Message);
                 return;
@@ -31,22 +34,32 @@ function addGuardian(guardianid, callback) {
             $("#setupContent").empty().html(data);
             if (callback != undefined)
                 callback(guardianid);
+        },
+        error: function() {
+            $("#setupContent").loading('stop');
         }
     });
 }
 
 function addCamper(camperid) {
+    $("#setupContent").loading({ message: "Adding Camper..." });
+
     $.ajax({
         url: '/Registrations/' + registrationid + '/AddCamper/' + camperid,
         method: 'POST',
         cache: false,
+        async: false,
         success: function (data, status, xhr, dataType) {
+            $("#setupContent").loading('stop');
             if (typeof (data) == "object") {
                 alert(data.Message);
                 return;
             }
             // not valid JSON
             $("#setupContent").html(data);
+        },
+        error: function() {
+            $("#setupContent").loading('stop');
         }
     });
 }
@@ -77,6 +90,9 @@ function removeCamper(camperid) {
             }
             // not valid JSON
             $("#setupContent").html(data);
+        },
+        error: function() {
+            alert('Error removing Guardian.');
         }
     });
 }

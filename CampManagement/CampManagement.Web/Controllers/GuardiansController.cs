@@ -31,7 +31,7 @@ namespace CampManagement.Web.Controllers
         [HttpPost]
         public JsonResult SendConfirmationEmail(int id)
         {
-            SendEmailConfirmation(db.Guardians.Find(id));
+            SendEmailConfirmation(db.Guardians.Find(id), Request);
             return Json(true);
         }
 
@@ -54,7 +54,7 @@ namespace CampManagement.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                guardian.Phone = guardian.Phone != null ? guardian.Phone.Replace("(", "").Replace(")", "").Replace("-", "") : null;
+                guardian.Phone = guardian.Phone != null ? guardian.Phone.Replace(" ", "").Replace("(", "").Replace(")", "").Replace("-", "") : null;
                 guardian.CreatedDate = guardian.UpdatedDate = DateTime.Now;
                 guardian.CreatedBy = User.Identity.GetUserId();
                 guardian.UpdatedBy = User.Identity.GetUserId();
@@ -65,7 +65,7 @@ namespace CampManagement.Web.Controllers
                 db.SaveChanges();
 
                 if (!string.IsNullOrEmpty(guardian.Email))
-                    SendEmailConfirmation(guardian);
+                    SendEmailConfirmation(guardian, Request);
 
                 if (Request["autoclose"] == "1")
                 {
@@ -78,14 +78,18 @@ namespace CampManagement.Web.Controllers
             return View("Manage", guardian);
         }
 
-        private void SendEmailConfirmation(Guardian guardian)
+        public void SendEmailConfirmation(Guardian guardian, HttpRequestBase request)
         {
+            if (guardian.Email == null || guardian.Email.IndexOf("@") < 0) return;
+            var url = request?.Url == null ? "" : request.Url.ToString();
+            if (!string.IsNullOrEmpty(request?.Url?.Query)) url = url.Replace(request.Url.Query, "");
+            if (!string.IsNullOrEmpty(request?.Url?.LocalPath)) url = url.Replace(request.Url.LocalPath, "");
+
             SendWithUs.Send(SendWithUs.TEMPLATE_NewGuardian, guardian.Name, guardian.Email, new
             {
                 name = guardian.Name,
                 button_text = "Confirmar!",
-                url =
-                $"{Request.Url.ToString().Replace(Request.Url.LocalPath, "") + Url.Action("ConfirmEmail")}/{guardian.RowGuid}"
+                url = $"{url + "/Guardians/ConfirmEmail"}/{guardian.RowGuid}"
             });
         }
 
@@ -135,12 +139,18 @@ namespace CampManagement.Web.Controllers
                 {
                     guardian.EmailConfirmed = false;
                     if (!string.IsNullOrEmpty(guardian.Email))
+                    {
+                        var url = Request.Url.ToString();
+                        if (Request.Url.Query != "") url = url.Replace(Request.Url.Query, "");
+                        if (Request.Url.LocalPath != "") url = url.Replace(Request.Url.LocalPath, "");
+
                         SendWithUs.Send(SendWithUs.TEMPLATE_NewGuardian, guardian.Name, guardian.Email, new
                         {
                             name = guardian.Name,
                             button_text = "Confirmar!",
-                            url = $"{Request.Url.ToString().Replace(Request.Url.Query,"").Replace(Request.Url.LocalPath, "") + Url.Action("ConfirmEmail")}/{currentData?.RowGuid}"
+                            url = $"{url + Url.Action("ConfirmEmail")}/{currentData?.RowGuid}"
                         });
+                    }   
                 }
 
                 guardian.Phone = guardian.Phone != null ? guardian.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "") : null;
