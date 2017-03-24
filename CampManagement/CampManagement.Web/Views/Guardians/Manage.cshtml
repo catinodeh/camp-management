@@ -24,6 +24,7 @@
                     <div class="row valign">
                         <div class="col-xs-12"> 
                             @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.EmailConfirmed)
                             @Html.HiddenFor(model => model.CreatedDate)
                             @Html.HiddenFor(model => model.RowGuid)
                             @Html.HiddenFor(model => model.CreatedBy)

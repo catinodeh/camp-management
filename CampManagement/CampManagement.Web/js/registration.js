@@ -26,7 +26,7 @@ function addGuardian(guardianid, callback) {
         method: 'POST',
         cache: false,
         success: function (data, status, xhr, dataType) {
-            $("#setupContent").loading('stop');
+            $("#setupContent").loading('toggle');
             if (typeof(data) == "object") {
                 alert(data.Message);
                 return;
@@ -36,7 +36,7 @@ function addGuardian(guardianid, callback) {
                 callback(guardianid);
         },
         error: function() {
-            $("#setupContent").loading('stop');
+            $("#setupContent").loading('toggle');
         }
     });
 }
@@ -50,7 +50,7 @@ function addCamper(camperid) {
         cache: false,
         async: false,
         success: function (data, status, xhr, dataType) {
-            $("#setupContent").loading('stop');
+            $("#setupContent").loading('toggle');
             if (typeof (data) == "object") {
                 alert(data.Message);
                 return;
@@ -59,7 +59,7 @@ function addCamper(camperid) {
             $("#setupContent").html(data);
         },
         error: function() {
-            $("#setupContent").loading('stop');
+            $("#setupContent").loading('toggle');
         }
     });
 }

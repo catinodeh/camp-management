@@ -99,6 +99,8 @@
     <Compile Include="Entities\Camper.cs" />
     <Compile Include="Entities\CampSetup.cs" />
     <Compile Include="Entities\CurrentRegistration.cs" />
+    <Compile Include="Entities\Dashboard\CampSummary.cs" />
+    <Compile Include="Entities\Dashboard\PaymentHistory.cs" />
     <Compile Include="Entities\RegistrationCamperExtraActivities.cs" />
     <Compile Include="Entities\TemplateContact.cs" />
     <Compile Include="Entities\User.cs" />

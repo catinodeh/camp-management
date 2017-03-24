@@ -30,7 +30,18 @@ namespace CampManagement.Web.Controllers
             return View(readOnly == true ? "IndexReadOnly" : "Index", result);
         }
 
+        [HttpPost]
+        public JsonResult GetExtraActivities(int id)
+        {
+            return Json(GetActivityPerRegistrationCamperId(id));
+        }
+
         public ActionResult ExtraActivities(int id)
+        {
+            return View(GetActivityPerRegistrationCamperId(id));
+        }
+
+        private UserActivity GetActivityPerRegistrationCamperId(int id)
         {
             var reg = db.RegistrationCampers.FirstOrDefault(r => r.RegistrationCamperId == id);
             var thisCamperActivities = db.RegistrationCamperExtraActivities
@@ -44,7 +55,7 @@ namespace CampManagement.Web.Controllers
                 CamperExtraActivities = thisCamperActivities
             };
 
-            return View(obj);
+            return obj;
         }
 
         // POST: ExtraActivities/Create

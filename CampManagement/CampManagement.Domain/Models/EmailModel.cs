@@ -8,6 +8,7 @@ namespace CampManagement.Domain.Models
 {
     public class EmailModel
     {
+        public int Method { get; set; }
         public string Template { get; set; }
         public string Ids { get; set; }
         public string To { get; set; }

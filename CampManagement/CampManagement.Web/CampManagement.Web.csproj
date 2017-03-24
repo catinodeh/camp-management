@@ -245,6 +245,7 @@
     </Compile>
     <Compile Include="Helpers\JsonExtensionMethod.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="Models\DashboardViewModel.cs" />
     <Compile Include="Models\DefaultJsonReturn.cs" />
     <Compile Include="Models\RegistrationModel.cs" />
     <Compile Include="Models\SendWithUs.cs" />
@@ -297,6 +298,16 @@
     <Content Include="js\app.data.js" />
     <Content Include="js\app.js" />
     <Content Include="js\app.plugin.js" />
+    <Content Include="js\charts\easypiechart\jquery.easy-pie-chart.js" />
+    <Content Include="js\charts\flot\demo.js" />
+    <Content Include="js\charts\flot\jquery.flot.min.js" />
+    <Content Include="js\charts\flot\jquery.flot.orderBars.js" />
+    <Content Include="js\charts\flot\jquery.flot.pie.min.js" />
+    <Content Include="js\charts\flot\jquery.flot.resize.js" />
+    <Content Include="js\charts\flot\jquery.flot.tooltip.min.js" />
+    <Content Include="js\charts\morris\morris.min.js" />
+    <Content Include="js\charts\morris\raphael-min.js" />
+    <Content Include="js\charts\sparkline\jquery.sparkline.min.js" />
     <Content Include="js\registration.js" />
     <Content Include="js\site.js" />
     <Content Include="js\site.min.js" />
@@ -427,6 +438,7 @@
     <Content Include="Views\Communication\AllGuardians.cshtml" />
     <Content Include="Views\Communication\Contacts.cshtml" />
     <Content Include="Views\Shared\_LayoutCommunication.cshtml" />
+    <Content Include="Views\Communication\RegisteredGuardians.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

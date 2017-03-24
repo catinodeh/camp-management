@@ -4,17 +4,23 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace CampManagement.Web.Models
 {
+    internal class EmailTo
+    {
+        public string address { get; set; }
+    }
     public class SendWithUs
     {
         public static string TEMPLATE_NewGuardian = ConfigurationManager.AppSettings["sendwithus_newguardian"];
         public static string TEMPLATE_Registration = ConfigurationManager.AppSettings["sendwithus_registration"];
 
-        public static void Send(string templateid, string recipientName, string recipientEmail, object templateData, string cc = null)
+        public static void Send(string templateid, string recipientName, string recipientEmail, object templateData, string[] cc = null, string[] bcc = null)
         {
             string api_key = ConfigurationManager.AppSettings["sendwithus_key"];
 
@@ -34,12 +40,26 @@ namespace CampManagement.Web.Models
             WebHeaderCollection headers = httpWebRequest.Headers;
             headers.Add("Authorization", "Basic " + api_key);
 
+            EmailTo[] ccArray = null;
+            EmailTo[] bccArray = null;
+
+            if (cc != null)
+            {
+                ccArray = cc.Select(c => new EmailTo() {address = c}).ToArray();
+            }
+
+            if (bcc != null)
+            {
+                bccArray = bcc.Select(c => new EmailTo() { address = c }).ToArray();
+            }
+
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
                 string json = new JavaScriptSerializer().Serialize(new
                 {
                     template = templateid,
-                    cc,
+                    cc = ccArray,
+                    bcc = bccArray,
                     recipient = new {
                         name = recipientName,
                         address = recipientEmail

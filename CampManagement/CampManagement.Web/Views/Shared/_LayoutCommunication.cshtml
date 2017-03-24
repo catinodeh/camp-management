@@ -6,7 +6,7 @@
 @RenderBody()
 
 <div class="modal fade" id="emailform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog custom-class" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -16,6 +16,15 @@
                 <form class="form-horizontal" method="POST" id="frmEmail" action="@Url.Action("Send", "Communication")">
                     <input type="hidden" name="Ids" id="Ids" />
                     <input type="hidden" name="Body" id="Body" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Method</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="Method">
+                                <option value="1" selected="selected">BCC everyone (One email only)</option>
+                                <option value="2">One per guardian (Allows Wildcards)</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Template</label>
                         <div class="col-sm-10">
@@ -98,11 +107,20 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" data-cid="" class="btn btn-success" onclick="SaveAndClose()"><i class="fa fa-envelope"></i>&nbsp;Send and Close</button>
+                <button type="button" id="btnWildCards" class="btn btn-info">See WildCards</button>
+                <button type="button" data-cid="" class="btn btn-success" onclick="SaveAndClose(this)"><i class="fa fa-envelope"></i>&nbsp;Send and Close</button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    @@media screen and (min-width: 768px) {
+        .custom-class {
+            width: 70%; /* either % (e.g. 60%) or px (400px) */
+        }
+    }
+</style>
 
 @section scripts {
     <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet" />
@@ -112,10 +130,20 @@
     <script src="@Url.Content("~/lib/wysiwyg/demo.js")"></script>
     
     <script type="text/javascript">
-        function SaveAndClose() {
+        function SaveAndClose(btn) {
+            $(btn).prop("disabled", true);
             $('#Body').val($('#editor').html());
             $('#frmEmail').submit();
         }
+
+        $("#btnWildCards").click(function() {
+            alert("Use '@@' before each one. Ex.: @@Name, @@Email\n" +
+                 "\n" +
+                "@@Name\n" +
+                "@@Phone\n" +
+                "@@Email");
+        });
+
         $("#btnEmailForm").click(function() {
             var bcc = $("input[name='Id']:checked").map(function() {
                 return $(this).data("name") + " <" + $(this).data("email") + ">\n";

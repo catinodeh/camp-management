@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CampManagement.Data;
+using CampManagement.Domain.Entities.Dashboard;
 using CampManagement.Web.Models;
 
 namespace CampManagement.Web.Controllers
@@ -10,23 +12,18 @@ namespace CampManagement.Web.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        private CampManagementDbContext db = new CampManagementDbContext();
+
         public ActionResult Index()
         {
-            return View();
-        }
+            var payments = db.Database.SqlQuery<PaymentHistory>("EXEC dbo.usp_LastPayments").ToList();
+            var campSummaries = db.Database.SqlQuery<CampSummary>("EXEC dbo.usp_CampDashboard").ToList();
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            return View(new DashboardViewModel()
+            {
+                PaymentHistories = payments,
+                CampSummaries = campSummaries.OrderBy(c => c.FromGrade).ToList()
+            });
         }
     }
 }

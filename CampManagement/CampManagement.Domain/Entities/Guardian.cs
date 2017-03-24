@@ -52,4 +52,17 @@ namespace CampManagement.Domain.Entities
         public bool EmailConfirmed { get; set; }
         public Guid RowGuid { get; set; }
     }
+
+    [Table("vw_GuardiansRegistered")]
+    public class RegisteredGuardianEmail
+    {
+        [Key]
+        public int GuardianId { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public Guid RowGuid { get; set; }
+    }
 }

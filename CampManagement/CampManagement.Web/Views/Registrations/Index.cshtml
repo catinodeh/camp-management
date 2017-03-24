@@ -115,19 +115,16 @@
                                         "render": function (data, type, row) {
                                             if (row.EmailConfirmed === true) {
                                                 return "<span>" +
-                                                    row.Email +
-                                                    "&nbsp;<i style='color:green' class='fa fa-check-circle'></i></span>";
+                                                    "<i style='color:green' class='fa fa-check-circle'></i></span>&nbsp;" + row.Email;
                                             }
-                                            return "<span>" +
-                                                row.Email +
-                                                "&nbsp;<i data-guardianid='" + row.GuardianId + "' style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i></span>";
+                                            return "<span><i data-guardianid='" + row.GuardianId + "' style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i></span>&nbsp;" + row.Email;
                                         }
                                     },
                                     {
                                         "mData": "Phone",
                                         "sorting": false,
                                         "render": function (data, type, row) {
-                                            return formatPhoneNumber(row.Phone);
+                                            return '<span style="white-space: nowrap;">' + formatPhoneNumber(row.Phone) + '</span>';
                                         }
                                     },
                                 </text>
@@ -199,6 +196,19 @@
                                     function (data) {
                                         $("#reg" + row.data().RowNumber).removeClass("fa-plus-square").addClass("fa-minus-square-o");
                                         row.child(data).show();
+                                        $.post("@Url.Action("GetExtraActivities","ExtraActivities")/" + row.data().RegistrationCamperId, function (data) {
+                                            var ea = [];
+                                            $(data.CamperExtraActivities).each(function (i, item)
+                                            {
+                                                $(data.ExtraActivities).each(function (y, activity) {
+                                                    if (item.ActivityId == activity.ActivityId) {
+                                                        ea.push(activity.Description);
+                                                        
+                                                    }
+                                                });
+                                            });
+                                            $("#Extra_" + row.data().RegistrationCamperId).val(ea.join(", "));
+                                        });
                                     });
 
                                 // Add to the 'open' array

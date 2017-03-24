@@ -299,17 +299,21 @@ namespace CampManagement.Web.Controllers
         public ActionResult RemoveCamper(int registrationId, int camperId)
         {
             var camper = db.RegistrationCampers.FirstOrDefault(rc => rc.RegistrationId == registrationId && rc.CamperId == camperId);
-            var registration = GetById(registrationId);
-            registration.CompletedDate = null;
-            registration.UpdatedDate = DateTime.Now;
-            registration.UpdatedBy = User.Identity.GetUserId();
+            var registration = db.Registrations.FirstOrDefault(r => r.RegistrationId == registrationId);
+
+            if (registration != null)
+            {
+                registration.CompletedDate = null;
+                registration.UpdatedDate = DateTime.Now;
+                registration.UpdatedBy = User.Identity.GetUserId();
+            }
 
             if (camper != null)
                 db.RegistrationCampers.Remove(camper);
 
             db.SaveChanges();
 
-            return CurrentSetup(registration);
+            return CurrentSetup(GetById(registrationId));
         }
 
         [HttpPost]
@@ -326,7 +330,7 @@ namespace CampManagement.Web.Controllers
                 // Do stuff with it.
                 if (camper.BirthDate > today.AddYears(-age)) age--;
 
-                var currentGrade = age - 5 < 0 ? 1 : age - 5;
+                var currentGrade = age - 5 <= 0 ? 1 : (age - 5 > 12 ? 12 : age - 5);
                 var campSetupId = db.CampSetups
                                     .Where(c => currentGrade >= c.FromGrade 
                                                     && currentGrade <= c.ToGrade 
@@ -347,6 +351,17 @@ namespace CampManagement.Web.Controllers
 
                 if (db.RegistrationCampers.Any(c => c.CamperId == camperId && c.RegistrationId != registrationId && c.CreatedDate.Year == DateTime.Now.Year))
                     return Json(new DefaultJsonReturn() { Success = false, Message = "Camper is already in another registration!" });
+
+                //Searching for previous grade and adding +1
+                var pastYear = DateTime.Now.Year - 1;
+                var previousGrade = (from rc in db.RegistrationCampers
+                                    join cs in db.CampSetups on rc.CampSetupId equals cs.CampSetupId
+                                    join ca in db.Camps on cs.CampId equals ca.CampId
+                                    where rc.CamperId == camper.CamperId && cs.Year == pastYear
+                                    select rc.Grade).FirstOrDefault();
+
+                if (previousGrade > 0)
+                    currentGrade = (previousGrade > 11 ? 11 : previousGrade) + 1;
 
                 db.RegistrationCampers.Add(new RegistrationCamper()
                 {

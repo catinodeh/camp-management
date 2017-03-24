@@ -1,3 +1,303 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model CampManagement.Web.Models.DashboardViewModel
+
+@using System.Linq
+@using System.Text
+
+@{
+    decimal TotalAllCamps = 0;
+    decimal TotalPaidAllCamps = 0;
+    ViewBag.Title = "Dashboard";
+    string[] colors = new string[] { "#59dbbf", "#aeb6cb", "#5dcff3", "#ef6866", "#de79c3", "#464af0", "#39b532", "#f797e3" };    
+}
+
+@helper GetPercentage(decimal total, decimal partial)
+{
+    if (partial > total)
+    {
+        var t = partial - total;
+        @( (100 + ((t * 100) / total)).ToString("0.##") )
+    }
+    else
+    {
+        @( ((partial * 100)/total).ToString("0.##") )
+    }
+}
+
+<div class="row">
+    @for (int i = 0; i < Model.CampSummaries.Count; i++)
+    {
+        TotalAllCamps += Model.CampSummaries[i].TotalAmount;
+        TotalPaidAllCamps += Model.CampSummaries[i].TotalPaid;
+        <div class="col-lg-4">
+            <section class="panel">
+                <header class="panel-heading font-bold">@Model.CampSummaries[i].Name <div class="pull-right">[Grades @Model.CampSummaries[i].FromGrade to @Model.CampSummaries[i].ToGrade]</div></header>
+                <div class="panel-body">
+                    <section class="panel no-borders">
+                        <header class="panel-heading lter" style="background-color: @(colors[i])">
+                            <span class="pull-right"></span>
+                            <span class="h4">
+                                Registered: @Model.CampSummaries[i].TotalRegistrations<br>
+                                <small class="text-muted">Spaces: @Model.CampSummaries[i].TotalSpaces</small>
+                                <br>
+                                <small class="text-muted">Confirmed: @Model.CampSummaries[i].TotalConfirmed</small>
+                            </span>
+                        </header>
+                        <div class="panel-body">
+                            <div>
+                                <span class="text-muted">Payments</span>
+                                <span class="h3 block">@Model.CampSummaries[i].TotalPaid.ToString("C0") / @Model.CampSummaries[i].TotalAmount.ToString("C0")</span>
+                            </div>
+                            @*<div class="row m-t-sm">
+                                <div class="col-xs-3">
+                                    <small class="text-muted block">1 Pymt</small>
+                                    <span>@Model.CampSummaries[i].Total1Payment</span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <small class="text-muted block">2 Pymt</small>
+                                    <span>@Model.CampSummaries[i].Total2Payment</span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <small class="text-muted block">3 Pymt</small>
+                                    <span>@Model.CampSummaries[i].Total3Payment</span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <small class="text-muted block">4 Pymt</small>
+                                    <span>@Model.CampSummaries[i].Total4Payment</span>
+                                </div>
+                            </div>*@
+                        </div>
+                    </section>
+                    <section class="panel">
+                        @*<div class="text-center wrapper">
+                            <div class="sparkline inline" data-type="pie" data-height="150" data-slice-colors="['#acdb83','#ffcc00','#fb6b5b']">@Model.CampSummaries[i].TotalPaidFull,@Model.CampSummaries[i].TotalBalance,@(Model.CampSummaries[i].TotalAmount - Model.CampSummaries[i].TotalPaid)</div>
+                        </div>*@
+                        <ul class="list-group no-radius">
+                            <li class="list-group-item">
+                                <span class="pull-right">@Model.CampSummaries[i].QtyPaidFull</span>
+                                <span class="label bg-success">1</span>
+                                Paid
+                            </li>
+                            <li class="list-group-item">
+                                <span class="pull-right">@Model.CampSummaries[i].QtyHasBalance</span>
+                                <span class="label bg-warning">2</span>
+                                Has Balance
+                            </li>
+                            <li class="list-group-item">
+                                <span class="pull-right">@Model.CampSummaries[i].QtyNoPayment</span>
+                                <span class="label bg-danger">3</span>
+                                No Payment
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </section>
+        </div>
+    }
+</div>
+
+<div class="row">
+    <div class="col-lg-2">
+        <section class="wrapper">
+            <div class="text-center m-b">
+                <div class="inline">
+                    <div class="easypiechart" data-percent="@GetPercentage(Model.CampSummaries.Sum(c => c.TotalAmount), Model.CampSummaries.Sum(c => c.TotalPaid))" data-line-width="25" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="180">
+                        <span class="h2">60</span>%
+                        <div class="easypie-text">Total Paid</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-lg-10">
+        <div class="wrapper">
+            <div id="hero-area" class="graph"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Sparkline Chart -->
+    <script src="@Url.Content("~/js/charts/sparkline/jquery.sparkline.min.js")"></script>
+    <!-- Easy Pie Chart -->
+    <script src="@Url.Content("~/js/charts/easypiechart/jquery.easy-pie-chart.js")"></script>
+    <!-- Morris -->
+    <script src="@Url.Content("~/js/charts/morris/raphael-min.js")" cache="false"></script>
+    <script src="@Url.Content("~/js/charts/morris/morris.min.js")" cache="false"></script>
+    <script language="javascript">
+        $(document).ready(function () {
+            // chart js
+            var generateSparkline = function ($re) {
+                $(".sparkline").each(function () {
+                    var $data = $(this).data();
+                    if ($re && !$data.resize) return;
+                    if ($data.type == 'bar') {
+                        !$data.barColor && ($data.barColor = "#3fcf7f");
+                        !$data.barSpacing && ($data.barSpacing = 2);
+                        $(this).next('.axis').find('li').css('width', $data.barWidth + 'px').css('margin-right', $data.barSpacing + 'px');
+                    };
+
+                    ($data.type == 'pie') && $data.sliceColors && ($data.sliceColors = eval($data.sliceColors));
+                    ($data.type == 'bar') && $data.stackedBarColor && ($data.stackedBarColor = eval($data.stackedBarColor));
+
+                    $data.fillColor && ($data.fillColor.indexOf("#") !== -1) && isRgbaSupport() && ($data.fillColor = toRgba($data.fillColor, 0.5));
+
+                    $data.valueSpots = { '0:': $data.spotColor };
+                    $data.minSpotColor = false;
+                    $(this).sparkline($data.data || "html", $data);
+
+                    if ($(this).data("compositeData")) {
+                        var $cdata = {};
+                        $cdata = $(this).data("compositeConfig");
+                        $cdata.composite = true;
+                        $cdata.valueSpots = { '0:': $cdata.spotColor };
+                        $cdata.fillColor && ($cdata.fillColor.indexOf("#") !== -1) && isRgbaSupport() && ($cdata.fillColor = toRgba($cdata.fillColor, 0.5));
+                        $(this).sparkline($(this).data("compositeData"), $cdata);
+                    };
+                    if ($data.type == 'line') {
+                        $(this).next('.axis').addClass('axis-full');
+                    };
+                });
+            };
+
+            var sparkResize;
+            $(window).resize(function (e) {
+                clearTimeout(sparkResize);
+                sparkResize = setTimeout(function () { generateSparkline(true) }, 500);
+            });
+            generateSparkline(false);
+
+            // Morris
+            $('a[href="#morris"]').on('shown.bs.tab', function () {
+                if ($('.graph').children().length > 0) return;
+                buildMorris(false);
+                var morrisResize;
+                $(window).resize(function (e) {
+                    clearTimeout(morrisResize);
+                    morrisResize = setTimeout(function () { buildMorris(true) }, 500);
+                });
+            });
+
+            var buildMorris = function ($re) {
+                if ($re) {
+                    $('.graph').html('');
+                }
+
+                buildArea();
+
+                Morris.Bar({
+                    element: 'hero-bar',
+                    data: [
+                        { device: 'iPhone', geekbench: 136 },
+                        { device: 'iPhone 3G', geekbench: 137 },
+                        { device: 'iPhone 3GS', geekbench: 275 },
+                        { device: 'iPhone 4', geekbench: 380 },
+                        { device: 'iPhone 4S', geekbench: 655 },
+                        { device: 'iPhone 5', geekbench: 1571 }
+                    ],
+                    xkey: 'device',
+                    ykeys: ['geekbench'],
+                    labels: ['Geekbench'],
+                    barRatio: 0.4,
+                    xLabelAngle: 35,
+                    hideHover: 'auto',
+                    barColors: ['#aeb6cb']
+                });
+            };
+
+            var buildArea = function () {
+                Morris.Area({
+                    element: 'hero-area',
+                    data: [
+                        @{
+                            StringBuilder rows = new StringBuilder();
+                            bool showPeriod = false;
+                        }
+                        @for (int day = 0; day < 10; day++)
+                        {
+                            showPeriod = false;
+                            for (int camp = 0; camp < Model.PaymentHistories.Count; camp++)
+                            {
+                                if (camp == 0)
+                                {
+                                    rows.Append("{ ");
+                                }
+                                if (!showPeriod)
+                                {
+                                    rows.Append($" period: '{DateTime.Now.AddDays((10 - day) * -1):yyyy-MM-dd}', ");
+                                    showPeriod = true;
+                                }
+                                rows.Append($"cs_{Model.PaymentHistories[camp].CampSetupId}: {Model.PaymentHistories[camp].Dates[day]} ");
+                                if (camp == Model.PaymentHistories.Count - 1)
+                                {
+                                    rows.AppendLine("},");
+                                }
+                                else
+                                {
+                                    rows.Append(", ");
+                                }
+                            }
+                        }
+                        @Html.Raw(rows.ToString())
+                    ],
+                    xkey: 'period',
+                    ykeys: [ @Html.Raw(string.Join(",", Model.PaymentHistories.Select(c => $"'cs_{c.CampSetupId}'").ToArray()))],
+                    labels: [ @Html.Raw(string.Join(",", Model.PaymentHistories.Select(c => $"'{c.Name}'").ToArray()))],
+                    hideHover: 'auto',
+                    lineWidth: 2,
+                    pointSize: 4,
+                    lineColors: [ @Html.Raw(string.Join(",", Model.CampSummaries.Select((item, i) => $"'{colors[i]}'" ).ToArray())) ],
+                    fillOpacity: 0.5,
+                    smooth: true
+                });
+            };
+
+            $('#hero-area').each(function () {
+                buildArea();
+                var morrisResizes;
+                $(window).resize(function (e) {
+                    clearTimeout(morrisResizes);
+                    morrisResizes = setTimeout(function () {
+                        $('.graph').html('');
+                        buildArea();
+                    }, 500);
+                });
+            });
+        });
+
+        // easypie
+        var updatePie = function ($that) {
+            var $this = $that,
+            $newValue = Math.round(100 * Math.random());
+            $this.data('easyPieChart').update($newValue);
+        };
+
+        $('.easypiechart').each(function () {
+            var $barColor = $(this).data("barColor") || function ($percent) {
+                $percent /= 100;
+                return "rgb(" + Math.round(255 * (1 - $percent)) + ", " + Math.round(255 * $percent) + ", 125)";
+            },
+            $trackColor = $(this).data("trackColor") || "#c8d2db",
+            $scaleColor = $(this).data("scaleColor"),
+            $lineWidth = $(this).data("lineWidth") || 12,
+            $size = $(this).data("size") || 130,
+            $animate = $(this).data("animate") || 1000;
+
+            $(this).easyPieChart({
+                barColor: $barColor,
+                trackColor: $trackColor,
+                scaleColor: $scaleColor,
+                lineCap: 'butt',
+                lineWidth: $lineWidth,
+                size: $size,
+                animate: $animate,
+                onStop: function () {
+                    var $this = this.$el;
+                    $this.data("loop") && setTimeout(function () { $this.data("loop") && updatePie($this) }, 2000);
+                },
+                onStep: function (value) {
+                    this.$el.find('span').text(parseInt(value));
+                }
+            });
+        });
+    </script>
 }

@@ -153,6 +153,7 @@ namespace CampManagement.Web.Controllers
                     }   
                 }
 
+                guardian.EmailConfirmed = guardian.EmailConfirmed ?? true;
                 guardian.Phone = guardian.Phone != null ? guardian.Phone.Replace(" ","").Replace("(", "").Replace(")", "").Replace("-", "") : null;
                 guardian.UpdatedBy = User.Identity.GetUserId();
                 guardian.UpdatedDate = DateTime.Now;

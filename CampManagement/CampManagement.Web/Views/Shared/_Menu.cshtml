@@ -8,7 +8,7 @@
     <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
         <a href="@Url.Action("Index", "Home", new { id = "" })">
             <i class="fa fa-home"></i>
-            <span>Home</span>
+            <span>Dashboard</span>
         </a>
     </li>
     <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
@@ -43,7 +43,10 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="@Url.Action("AllGuardians","Communication")">Active Guardians</a>
+                    <a href="@Url.Action("AllGuardians","Communication")">All Active Guardians</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("RegisteredGuardians","Communication")">Guardians Registered in @DateTime.Now.Year</a>
                 </li>
             </ul>
         </li>
