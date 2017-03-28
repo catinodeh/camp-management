@@ -25,9 +25,9 @@ namespace CampManagement.Domain.Entities
         public string CancelNotes { get; set; }
         public DateTime? CancelFinalized { get; set; }
         public string CreatedBy { get; set; }
-        public System.DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
-        public System.DateTime UpdatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
         public virtual CampSetup CampSetup { get; set; }
         public virtual Camper Camper { get; set; }

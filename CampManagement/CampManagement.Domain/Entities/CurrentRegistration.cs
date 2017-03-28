@@ -33,6 +33,7 @@ namespace CampManagement.Domain.Entities
         public DateTime? CancelFinalized { get; set; }
         public int Grade { get; set; }
         public decimal Price { get; set; }
+        public decimal Activity { get; set; }
         public bool? Registered { get; set; }
         public decimal? TotalRegistration { get; set; }
         public decimal? TotalActivities { get; set; }

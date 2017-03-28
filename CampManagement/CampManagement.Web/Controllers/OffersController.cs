@@ -61,7 +61,7 @@ namespace CampManagement.Web.Controllers
         public JsonResult GetCampersUsingOffers(int year)
         {
             var entries = (from p in db.RegistrationPayments
-                           where p.PaymentTypeId == 4 && p.Date.Year == DateTime.Now.Year
+                           where p.PaymentTypeId == 4 && p.Date.Year == year
                            select new OfferUsed()
                            {
                                RegistrationId = p.RegistrationId,

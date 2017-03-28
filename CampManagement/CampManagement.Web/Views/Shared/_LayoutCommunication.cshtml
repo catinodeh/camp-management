@@ -19,7 +19,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Method</label>
                         <div class="col-sm-10">
-                            <select class="form-control" name="Method">
+                            <select class="form-control" name="Method" id="Method">
                                 <option value="1" selected="selected">BCC everyone (One email only)</option>
                                 <option value="2">One per guardian (Allows Wildcards)</option>
                             </select>
@@ -28,8 +28,9 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Template</label>
                         <div class="col-sm-10">
-                            <select class="form-control" name="Template">
+                            <select class="form-control" name="Template" id="Template">
                                 <option value="tem_w8pbRkrfXwbyw4796tBM8qjb" selected="selected">General Notification</option>
+                                <option value="tem_bdTJWQmM6bDGpc3KhpVtM3cD">Email Confirmation (Don't require body)</option>
                             </select>
                         </div>
                     </div>
@@ -172,3 +173,5 @@
             });
     </script>
 }
+
+@RenderSection("scripts2", required: false)

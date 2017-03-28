@@ -129,6 +129,12 @@ namespace CampManagement.Web.Controllers
 
                 if (filter == 4)
                     query = query.Where(r => r.Cancelled == true && !r.CancelFinalized.HasValue);
+
+                if (filter == 5)
+                    query = query.Where(r => r.Cancelled == false);
+
+                if (filter == 6)
+                    query = query.Where(r => r.TotalPayments == 0 || r.TotalPayments == null);
             }
 
             query = query

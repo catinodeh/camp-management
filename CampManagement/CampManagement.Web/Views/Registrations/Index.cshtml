@@ -59,7 +59,7 @@
             return row.Cancelled ? "regcancelled" : "";
         }
 
-        var clip = new Clipboard('#mytable tbody input,select[data-clipboard-text]');
+        var clip = new Clipboard('#mytable tbody input,select[data-clipboard-text],textarea');
         clip.on('success',
             function (e) {
                 $(e.trigger).fadeOut().fadeIn();
@@ -95,7 +95,7 @@
                                 "class": "details-control",
                                 "width": "55px",
                                 "render": function (data, type, row) {
-                                    return "<span><i style='display:inline' class='fa fa-plus-square' id='reg" + row.RowNumber + "'></i>&nbsp;R" + row.RegistrationId + "</span>";
+                                    return "<span><i style='display:inline;' class='fa fa-plus-square' id='reg" + row.RowNumber + "'></i>&nbsp;R" + row.RegistrationId + "</span>";
                                 }
                             },
                             @if (Request["campId"] == "0" || Request["campId"] == null)
@@ -133,34 +133,51 @@
                             "mData": "Price",
                             "className": "dt-center",
                             "render": function (data, type, row) {
+                                if (["filter", "sort", "type"].indexOf(type) > -1) {
+                                    if (row.Cancelled) return 0;
+                                    return row.Price + row.Activity;
+                                }
                                 if (row.Cancelled) return "-";
-                                return format2(row.Price + (row.TotalActivities == null ? 0 : row.TotalActivities), '$');
+                                return format2(row.Price + row.Activity, '$');
                             }
                         },
-                            {
-                                "mData": "TotalRegistration",
-                                "className": "dt-center",
-                                "render": function (data, type, row) {
-                                    if (row.CompletedDate == null) return "<span title='Not yet finished' style='cursor: help; color:red'><i class='fa fa-exclamation'></i>&nbsp;N/F</span>";
-                                    if (row.Cancelled) return "-";
-                                    if (row.TotalRegistration - row.TotalPayments > 0)
-                                        return "<a class='balance' href='@Url.Action("Manage", "Payments")/" +
-                                            row.RegistrationId +
-                                            "'>" +
-                                            format2(row.TotalRegistration - row.TotalPayments, '$') +
-                                            "</a>";
-                                    return "Paid";
+                        {
+                            "mData": "TotalRegistration",
+                            "className": "dt-center",
+                            //"sType": "rank",
+                            "render": function (data, type, row) {
+                                var total = 0;
+
+                                total = (row.TotalRegistration + row.TotalActivities);
+                                if (["filter", "sort", "type"].indexOf(type) > -1) {
+                                    if (row.RegistrationId == 488)
+                                        console.log("tt");
+
+                                    if (row.Cancelled) return -1;
+                                    if (row.CompletedDate == null || (total - row.TotalPayments == 0)) return 0;
+                                    if (total - row.TotalPayments > 0) return total - row.TotalPayments;
+                                    return row.TotalRegistration;
                                 }
-                            },
-                            {
-                                "mData": "RegistrationId",
-                                "sorting": false,
-                                "render": function (data, type, row) {
-                                    return "<a href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" +
-                                        row.RegistrationId +
-                                        "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
-                                }
+                                if (row.CompletedDate == null) return "<span title='Not yet finished' style='cursor: help; color:red'><i class='fa fa-exclamation'></i>&nbsp;N/F</span>";
+                                if (row.Cancelled) return "-";
+                                if (total - row.TotalPayments > 0)
+                                    return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
+                                return "Paid";
                             }
+                        },
+                        {
+                            "mData": "RegistrationId",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                if (row.Cancelled) {
+                                    return "<button type='button' class='btn btn-danger btn-sm'><i class='fa fa-thumbs-o-down'></i>&nbsp;Cancelled</button>";
+                                }
+                                if (row.Registered) {
+                                    return "<button type='button' class='btn btn-success btn-sm'><i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed</button>";
+                                }
+                                return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                            }
+                        }
                         ],
                         "createdRow": function (row, data, dataIndex) {
 
@@ -235,6 +252,8 @@
             .css("text-align", "center")
             .html("<select class='form-control' name='filter' id='filter'>" +
                  "<option value='0'>- No Filter -</option>" +
+                 "<option value='5'>Not Cancelled</option>" +
+                 "<option value='6'>No Payment</option>" +
                  "<option value='1'>Registration Completed</option>" +
                  "<option value='2'>Registered not Finalized</option>" +
                  "<option value='3'>Cancelled Completed</option>" +

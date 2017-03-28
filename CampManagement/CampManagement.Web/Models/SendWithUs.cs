@@ -26,7 +26,6 @@ namespace CampManagement.Web.Models
 
             if (ConfigurationManager.AppSettings["debug"] != null)
             {
-                recipientName = "Thiago";
                 recipientEmail = "mymwps@gmail.com";
             }
 

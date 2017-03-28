@@ -47,24 +47,6 @@
                                 <span class="text-muted">Payments</span>
                                 <span class="h3 block">@Model.CampSummaries[i].TotalPaid.ToString("C0") / @Model.CampSummaries[i].TotalAmount.ToString("C0")</span>
                             </div>
-                            @*<div class="row m-t-sm">
-                                <div class="col-xs-3">
-                                    <small class="text-muted block">1 Pymt</small>
-                                    <span>@Model.CampSummaries[i].Total1Payment</span>
-                                </div>
-                                <div class="col-xs-3">
-                                    <small class="text-muted block">2 Pymt</small>
-                                    <span>@Model.CampSummaries[i].Total2Payment</span>
-                                </div>
-                                <div class="col-xs-3">
-                                    <small class="text-muted block">3 Pymt</small>
-                                    <span>@Model.CampSummaries[i].Total3Payment</span>
-                                </div>
-                                <div class="col-xs-3">
-                                    <small class="text-muted block">4 Pymt</small>
-                                    <span>@Model.CampSummaries[i].Total4Payment</span>
-                                </div>
-                            </div>*@
                         </div>
                     </section>
                     <section class="panel">
@@ -100,9 +82,9 @@
         <section class="wrapper">
             <div class="text-center m-b">
                 <div class="inline">
-                    <div class="easypiechart" data-percent="@GetPercentage(Model.CampSummaries.Sum(c => c.TotalAmount), Model.CampSummaries.Sum(c => c.TotalPaid))" data-line-width="25" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="180">
-                        <span class="h2">60</span>%
-                        <div class="easypie-text">Total Paid</div>
+                    <div class="easypiechart" data-percent="@GetPercentage(Model.CampSummaries.Sum(c => c.TotalAmount), Model.CampSummaries.Sum(c => c.TotalPaid))" data-paid="@TotalPaidAllCamps.ToString("C0")" data-line-width="15" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="200">
+                        <span class="h2">0</span>
+                        <div class="easypie-text">@TotalAllCamps.ToString("C")</div>
                     </div>
                 </div>
             </div>
@@ -126,6 +108,43 @@
     <script language="javascript">
         $(document).ready(function () {
             // chart js
+            // easypie
+            var updatePie = function ($that) {
+                var $this = $that,
+                $newValue = Math.round(100 * Math.random());
+                $this.data('easyPieChart').update($newValue);
+            };
+
+            $('.easypiechart').each(function () {
+                var $barColor = $(this).data("barColor") || function ($percent) {
+                    $percent /= 100;
+                    return "rgb(" + Math.round(255 * (1 - $percent)) + ", " + Math.round(255 * $percent) + ", 125)";
+                },
+                $trackColor = $(this).data("trackColor") || "#c8d2db",
+                $scaleColor = $(this).data("scaleColor"),
+                $lineWidth = $(this).data("lineWidth") || 12,
+                $size = $(this).data("size") || 130,
+                $animate = $(this).data("animate") || 1000;
+
+                $(this).easyPieChart({
+                    barColor: $barColor,
+                    trackColor: $trackColor,
+                    scaleColor: $scaleColor,
+                    lineCap: 'butt',
+                    lineWidth: $lineWidth,
+                    size: $size,
+                    animate: $animate,
+                    onStop: function () {
+                        var $this = this.$el;
+                        $this.data("loop") && setTimeout(function () { $this.data("loop") && updatePie($this) }, 2000);
+                    },
+                    onStep: function (value) {
+                        //this.$el.find('span').text(parseInt(value));
+                        this.$el.find('span').text(this.$el.data("paid"));
+                    }
+                });
+            });
+
             var generateSparkline = function ($re) {
                 $(".sparkline").each(function () {
                     var $data = $(this).data();
@@ -264,40 +283,6 @@
             });
         });
 
-        // easypie
-        var updatePie = function ($that) {
-            var $this = $that,
-            $newValue = Math.round(100 * Math.random());
-            $this.data('easyPieChart').update($newValue);
-        };
-
-        $('.easypiechart').each(function () {
-            var $barColor = $(this).data("barColor") || function ($percent) {
-                $percent /= 100;
-                return "rgb(" + Math.round(255 * (1 - $percent)) + ", " + Math.round(255 * $percent) + ", 125)";
-            },
-            $trackColor = $(this).data("trackColor") || "#c8d2db",
-            $scaleColor = $(this).data("scaleColor"),
-            $lineWidth = $(this).data("lineWidth") || 12,
-            $size = $(this).data("size") || 130,
-            $animate = $(this).data("animate") || 1000;
-
-            $(this).easyPieChart({
-                barColor: $barColor,
-                trackColor: $trackColor,
-                scaleColor: $scaleColor,
-                lineCap: 'butt',
-                lineWidth: $lineWidth,
-                size: $size,
-                animate: $animate,
-                onStop: function () {
-                    var $this = this.$el;
-                    $this.data("loop") && setTimeout(function () { $this.data("loop") && updatePie($this) }, 2000);
-                },
-                onStep: function (value) {
-                    this.$el.find('span').text(parseInt(value));
-                }
-            });
-        });
+        
     </script>
 }

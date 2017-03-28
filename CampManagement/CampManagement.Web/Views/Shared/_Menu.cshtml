@@ -24,7 +24,7 @@
         </a>
     </li>
     <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Registrations" ? "active" : "")">
-        <a href="@Url.Action("Index", "Registrations", new { id = "" })">
+        <a href="@Url.Action("Index", "Registrations", new { id = "" })?campId=0&filter=5">
             <i class="fa fa-sitemap"></i>
             <span>Registrations</span>
         </a>

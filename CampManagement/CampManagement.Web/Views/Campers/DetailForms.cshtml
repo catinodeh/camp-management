@@ -21,22 +21,28 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-4">
+    <div class="col-xs-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.Camper.Email, htmlAttributes: new { @class = "control-label" })
-            @Html.EditorFor(model => model.Camper.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+            @Html.LabelFor(model => model.Grade, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Grade, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
         </div>
     </div>
     <div class="col-xs-4">
         <div class="form-group">
-            @Html.LabelFor(model => model.Camper.Phone, htmlAttributes: new { @class = "control-label" })
-            @Html.EditorFor(model => model.Camper.Phone, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+            @Html.LabelFor(model => model.Camper.Email, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.Email, new {htmlAttributes = new {@class = "form-control", @readonly = ""}})
         </div>
     </div>
-    <div class="col-xs-4">
+    <div class="col-xs-3">
         <div class="form-group">
-            @Html.LabelFor(model => model.Camper.BirthDate, htmlAttributes: new { @class = "control-label" })
-            @Html.EditorFor(model => model.Camper.BirthDate, new { htmlAttributes = new { @class = "form-control", @readonly = "", Value = Model == null || Model.Camper.BirthDate == default(DateTime) ? "" : Model.Camper.BirthDate.ToString("MM/dd/yyyy") } })
+            @Html.LabelFor(model => model.Camper.Phone, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.Phone, new {htmlAttributes = new {@class = "form-control", @readonly = ""}})
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.BirthDate, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.BirthDate, new {htmlAttributes = new {@class = "form-control", @readonly = "", Value = Model == null || Model.Camper.BirthDate == default(DateTime) ? "" : Model.Camper.BirthDate.ToString("MM/dd/yyyy")}})
         </div>
     </div>
 </div>

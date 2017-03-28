@@ -151,6 +151,10 @@
             success: function(data) {
                 if (data) {
                     alert("Registration confirmed!");
+                    $("#btnEdit" + button.data("registrationcamperid"))
+                        .removeClass("btn-info")
+                        .addClass("btn-success")
+                        .html("<i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed");
                     var tdClick = $(button).closest("tr").prev().find("td.details-control");
                     tdClick.trigger("click"); //Closing
                     tdClick.trigger("click"); //Reopening
