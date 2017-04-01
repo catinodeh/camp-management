@@ -42,17 +42,22 @@
                                 <small class="text-muted">Confirmed: @Model.CampSummaries[i].TotalConfirmed</small>
                             </span>
                         </header>
-                        <div class="panel-body">
+                        @*<div class="panel-body">
                             <div>
                                 <span class="text-muted">Payments</span>
                                 <span class="h3 block">@Model.CampSummaries[i].TotalPaid.ToString("C0") / @Model.CampSummaries[i].TotalAmount.ToString("C0")</span>
                             </div>
-                        </div>
+                        </div>*@
                     </section>
                     <section class="panel">
-                        @*<div class="text-center wrapper">
-                            <div class="sparkline inline" data-type="pie" data-height="150" data-slice-colors="['#acdb83','#ffcc00','#fb6b5b']">@Model.CampSummaries[i].TotalPaidFull,@Model.CampSummaries[i].TotalBalance,@(Model.CampSummaries[i].TotalAmount - Model.CampSummaries[i].TotalPaid)</div>
-                        </div>*@
+                        <div class="text-center m-b">
+                            <div class="inline">
+                                <div class="easypiechart" data-percent="@GetPercentage(Model.CampSummaries.Sum(c => c.TotalAmount), Model.CampSummaries.Sum(c => c.TotalPaid))" data-paid="@Model.CampSummaries[i].TotalPaid.ToString("C0")" data-line-width="15" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="200">
+                                    <span class="h2">0</span>
+                                    <div class="easypie-text">@Model.CampSummaries[i].TotalAmount.ToString("C")</div>
+                                </div>
+                            </div>
+                        </div>
                         <ul class="list-group no-radius">
                             <li class="list-group-item">
                                 <span class="pull-right">@Model.CampSummaries[i].QtyPaidFull</span>

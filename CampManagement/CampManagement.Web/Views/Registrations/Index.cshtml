@@ -25,7 +25,11 @@
                         {
                             <th>Name</th>
                         }
-                        <th>Camper</th>                        
+                        <th>Camper</th>
+                        @if (Request["campId"] != "0" && Request["campId"] != null)
+                        {
+                            <th>Grade</th>
+                        }                  
                         <th>Guardian</th>
                         @if (!Request.Browser.IsMobileDevice)
                         {
@@ -104,7 +108,13 @@
                                     { "mData": "Name" },
                                 </text>
                             }
-                        { "mData": "CamperName" },
+                            { "mData": "CamperName" },
+                            @if (Request["campId"] != "0" && Request["campId"] != null)
+                            {
+                                <text>
+                                    { "mData": "Grade" },
+                                </text>
+                            }
                             { "mData": "GuardianName" },
                             @if (!Request.Browser.IsMobileDevice)
                             {
@@ -173,7 +183,8 @@
                                     return "<button type='button' class='btn btn-danger btn-sm'><i class='fa fa-thumbs-o-down'></i>&nbsp;Cancelled</button>";
                                 }
                                 if (row.Registered) {
-                                    return "<button type='button' class='btn btn-success btn-sm'><i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed</button>";
+                                    //return "<button type='button' class='btn btn-success btn-sm'><i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed</button>";
+                                    return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-success btn-sm'>Edit</a>";
                                 }
                                 return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
                             }
@@ -220,7 +231,7 @@
                                                 $(data.ExtraActivities).each(function (y, activity) {
                                                     if (item.ActivityId == activity.ActivityId) {
                                                         ea.push(activity.Description);
-                                                        
+
                                                     }
                                                 });
                                             });

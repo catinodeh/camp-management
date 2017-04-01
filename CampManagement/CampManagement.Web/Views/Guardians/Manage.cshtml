@@ -147,6 +147,7 @@
                             <th>Name</th>
                             <th>Phone</th>
                             <th>Email</th>
+                            <th>Year</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -160,6 +161,7 @@
 @section scripts {
     <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
     <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
 
     <script>
         $("#Phone").mask("(999) 999-9999");
@@ -185,6 +187,12 @@
                             {
                                 "mData": "GuardianId",
                                 "render": function (data, type, row) {
+                                    return moment(row.CreatedDate).format("YYYY");
+                                }
+                            },
+                            {
+                                "mData": "GuardianId",
+                                "render": function (data, type, row) {
                                     return "<a href='@Url.Action("Manage", "Guardians", new {id = ""})/" + row.GuardianId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
                                 }
                             }
@@ -192,7 +200,7 @@
                     });
             });
 
-        
+
     </script>
     @if (Convert.ToBoolean(TempData["close"]))
     {

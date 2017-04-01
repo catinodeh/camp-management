@@ -137,7 +137,7 @@
                         <tr>
                             <th>Name</th>
                             <th>BirthDate</th>
-                            <th>Phone</th>                            
+                            <th>Year</th>                            
                             <th></th>
                         </tr>
                     </thead>
@@ -178,9 +178,9 @@
                                 }
                             },
                             {
-                                "mData": "Phone",
-                                "render": function(data, type, row) {
-                                    return formatPhoneNumber(row.Phone);
+                                "mData": "CamperId",
+                                "render": function (data, type, row) {
+                                    return moment(row.CreatedDate).format("YYYY");
                                 }
                             },
                             {

@@ -122,7 +122,7 @@ namespace CampManagement.Web.Controllers
                     query = query.Where(r => r.Cancelled == false && r.Registered == true && r.CompletedDate.HasValue);
 
                 if (filter == 2)
-                    query = query.Where(r => r.Cancelled == false && r.Registered == true && !r.CompletedDate.HasValue);
+                    query = query.Where(r => r.Cancelled == false && r.Registered == false);
 
                 if (filter == 3)
                     query = query.Where(r => r.Cancelled == true && r.CancelFinalized.HasValue);
@@ -134,7 +134,7 @@ namespace CampManagement.Web.Controllers
                     query = query.Where(r => r.Cancelled == false);
 
                 if (filter == 6)
-                    query = query.Where(r => r.TotalPayments == 0 || r.TotalPayments == null);
+                    query = query.Where(r => (r.TotalPayments == 0 || r.TotalPayments == null) && r.Cancelled != true);
             }
 
             query = query
@@ -401,12 +401,23 @@ namespace CampManagement.Web.Controllers
 
         public Registration GetById(int registrionid)
         {
-            return db.Registrations
-                    .Include("Guardian")
-                    .Include("Campers.Camper")
-                    .Include("Campers.CampSetup")
-                    .Include("Campers.ExtraActivities")
-                    .FirstOrDefault(r => r.RegistrationId == registrionid);
+            Registration registration = db.Registrations.Include("Guardian").FirstOrDefault(r => r.RegistrationId == registrionid);
+            registration.Campers = db.RegistrationCampers.Include("Camper").Where(rc => rc.RegistrationId == registrionid).ToList();
+
+            foreach (var registrationCamper in registration.Campers)
+            {
+                registrationCamper.CampSetup = db.CampSetups.FirstOrDefault(cs => cs.CampSetupId == registrationCamper.CampSetupId);
+                registrationCamper.ExtraActivities = db.RegistrationCamperExtraActivities.Where(ea => ea.RegistrationCamperId == registrationCamper.RegistrationCamperId).ToList();
+            }
+
+            //return db.Registrations
+            //        .Include("Guardian")
+            //        .Include("Campers.Camper")
+            //        .Include("Campers.CampSetup")
+            //        .Include("Campers.ExtraActivities")
+            //        .FirstOrDefault(r => r.RegistrationId == registrionid);
+
+            return registration;
         }
         #endregion
     }
