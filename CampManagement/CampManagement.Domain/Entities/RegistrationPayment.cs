@@ -17,7 +17,7 @@ namespace CampManagement.Domain.Entities
         [Required]
         public DateTime Date { get; set; }
         [Required]
-        [Range(1, Double.MaxValue, ErrorMessage = "Amount should be greater than $0")]
+        //[Range(1, Double.MaxValue, ErrorMessage = "Amount should be greater than $0")]
         public decimal Amount { get; set; }
         [StringLength(400)]
         public string Notes { get; set; }
@@ -37,6 +37,9 @@ namespace CampManagement.Domain.Entities
                     yield return new ValidationResult("Payments need to be in " + DateTime.Now.Year);
                 }
             }
+
+            if (Amount == 0)
+                yield return new ValidationResult("Amount should be different than $0");
         }
     }
 }
