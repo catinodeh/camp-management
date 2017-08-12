@@ -88,7 +88,7 @@ namespace CampManagement.Web.Controllers
                     guardianCTR.SendEmailConfirmation(guardian, Request);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 
             }

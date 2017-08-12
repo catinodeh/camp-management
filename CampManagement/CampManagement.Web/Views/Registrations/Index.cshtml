@@ -160,19 +160,16 @@
 
                                 total = (row.TotalRegistration + row.TotalActivities);
                                 if (["filter", "sort", "type"].indexOf(type) > -1) {
-                                    if (row.RegistrationId == 488)
-                                        console.log("tt");
-
                                     if (row.Cancelled) return -1;
                                     if (row.CompletedDate == null || (total - row.TotalPayments == 0)) return 0;
                                     if (total - row.TotalPayments > 0) return total - row.TotalPayments;
                                     return row.TotalRegistration;
                                 }
                                 if (row.CompletedDate == null) return "<span title='Not yet finished' style='cursor: help; color:red'><i class='fa fa-exclamation'></i>&nbsp;N/F</span>";
-                                if (row.Cancelled) return "-";
+                                if (row.Cancelled) return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
                                 if (total - row.TotalPayments > 0)
                                     return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
-                                return "Paid";
+                                return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>Paid</a>";
                             }
                         },
                         {
