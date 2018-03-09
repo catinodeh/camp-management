@@ -1,0 +1,66 @@
+﻿@using System.Runtime.CompilerServices
+<style>
+    .nav > li > a > i {
+        height: 18px;
+    }
+</style>
+<ul class="nav">
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
+        <a href="@Url.Action("Index", "Home", new { id = "" })">
+            <i class="fa fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Guardians" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Guardians", new { id = "" })">
+            <i class="fa fa-user"></i>
+            <span>Guardians</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Campers" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Campers", new { id = "" })">
+            <i class="fa fa-group"></i>
+            <span>Campers</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Registrations" ? "active" : "")">
+        <a href="@Url.Action("Index", "Registrations", new { id = "" })?campId=0&filter=5">
+            <i class="fa fa-sitemap"></i>
+            <span>Registrations</span>
+        </a>
+    </li>
+    <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Offers" ? "active" : "")">
+        <a href="@Url.Action("Manage", "Offers", new { id = "" })">
+            <i class="fa fa-money"></i>
+            <span>Offers</span></a>
+    </li>
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrators"))
+    {
+        <li class="dropdown-submenu @Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Communication" ? "active" : "")">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-bullhorn"></i>
+                <span>Emails</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="@Url.Action("AllGuardians","Communication")">All Active Guardians</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("RegisteredGuardians","Communication")">Guardians Registered in @DateTime.Now.Year</a>
+                </li>
+            </ul>
+        </li>
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Camps" || ViewContext.RouteData.Values["controller"].ToString() == "CampSetups" ? "active" : "")">
+            <a href="@Url.Action("Create", "Camps", new { id = "" })">
+                <i class="fa fa-calendar"></i>
+                <span>Camps</span>
+            </a>
+        </li>
+        <li class="@Html.Raw(ViewContext.RouteData.Values["controller"].ToString() == "Account" ? "active" : "")">
+            <a href="@Url.Action("Register", "Account", new { id = "" })">
+                <i class="fa fa-lock"></i>
+                <span>Users</span>
+            </a>
+        </li>
+    }
+</ul>

@@ -1,0 +1,23 @@
+﻿@model CampManagement.Domain.Entities.Guardian
+
+@{
+    Layout = null;
+}
+
+<div id="guardianInfo">
+    <h2 style="display: inline;">
+        <i class='fa fa-user'></i>&nbsp;@Model.Name
+    </h2> 
+    <a href="@Url.Action("Manage", "Guardians", new { id = Model.GuardianId, autoclose = "1"})" style="display: inline; color: blue" target="_blank">Edit</a>
+    <hr style="clear:both;" />
+    @{ Html.RenderPartial("~/Views/Guardians/DetailForms.cshtml", Model); }
+    @if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() != "Payments")
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                <button class="btn btn-danger pull-right" onclick="removeGuardian(@Model.GuardianId)">Remove</button>
+            </div>
+        </div>
+    }
+</div>
+

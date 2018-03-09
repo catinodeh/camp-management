@@ -1,0 +1,177 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@RenderBody()
+
+<div class="modal fade" id="emailform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog custom-class" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Email Guardians</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" method="POST" id="frmEmail" action="@Url.Action("Send", "Communication")">
+                    <input type="hidden" name="Ids" id="Ids" />
+                    <input type="hidden" name="Body" id="Body" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Method</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="Method" id="Method">
+                                <option value="1" selected="selected">BCC everyone (One email only)</option>
+                                <option value="2">One per guardian (Allows Wildcards)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Template</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="Template" id="Template">
+                                <option value="tem_w8pbRkrfXwbyw4796tBM8qjb" selected="selected">General Notification</option>
+                                <option value="tem_bdTJWQmM6bDGpc3KhpVtM3cD">Email Confirmation (Don't require body)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">To</label>
+                        <div class="col-sm-10">
+                            <textarea rows="2" name="To" class="form-control" placeholder="to@email.com, to2@email.com, to3@email.com" id="To"></textarea>
+                        </div>
+                    </div>
+                    <div class="line line-dashed line-lg pull-in"></div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Body</label>
+                        <div class="col-sm-10">
+                            <div class="btn-toolbar m-b-sm btn-editor" data-role="editor-toolbar" data-target="#editor">
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a data-edit="fontName Serif" style="font-family: 'Serif'">Serif</a></li>
+                                        <li><a data-edit="fontName Sans" style="font-family: 'Sans'">Sans</a></li>
+                                        <li><a data-edit="fontName Arial" style="font-family: 'Arial'">Arial</a></li>
+                                        <li><a data-edit="fontName Arial Black" style="font-family: 'Arial Black'">Arial Black</a></li>
+                                        <li><a data-edit="fontName Courier" style="font-family: 'Courier'">Courier</a></li>
+                                        <li><a data-edit="fontName Courier New" style="font-family: 'Courier New'">Courier New</a></li>
+                                        <li><a data-edit="fontName Comic Sans MS" style="font-family: 'Comic Sans MS'">Comic Sans MS</a></li>
+                                        <li><a data-edit="fontName Helvetica" style="font-family: 'Helvetica'">Helvetica</a></li>
+                                        <li><a data-edit="fontName Impact" style="font-family: 'Impact'">Impact</a></li>
+                                        <li><a data-edit="fontName Lucida Grande" style="font-family: 'Lucida Grande'">Lucida Grande</a></li>
+                                        <li><a data-edit="fontName Lucida Sans" style="font-family: 'Lucida Sans'">Lucida Sans</a></li>
+                                        <li><a data-edit="fontName Tahoma" style="font-family: 'Tahoma'">Tahoma</a></li>
+                                        <li><a data-edit="fontName Times" style="font-family: 'Times'">Times</a></li>
+                                        <li><a data-edit="fontName Times New Roman" style="font-family: 'Times New Roman'">Times New Roman</a></li>
+                                        <li><a data-edit="fontName Verdana" style="font-family: 'Verdana'">Verdana</a></li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                        <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                        <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm btn-info" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a> <a class="btn btn-white btn-sm" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a> <a class="btn btn-white btn-sm" data-edit="strikethrough" title="" data-original-title="Strikethrough"><i class="fa fa-strikethrough"></i></a> <a class="btn btn-white btn-sm" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="fa fa-list-ul"></i></a> <a class="btn btn-white btn-sm" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="fa fa-list-ol"></i></a> <a class="btn btn-white btn-sm" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a> <a class="btn btn-white btn-sm" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm" data-edit="justifyleft" title="" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a> <a class="btn btn-white btn-sm" data-edit="justifycenter" title="" data-original-title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a> <a class="btn btn-white btn-sm btn-info" data-edit="justifyright" title="" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a> <a class="btn btn-white btn-sm" data-edit="justifyfull" title="" data-original-title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Hyperlink"><i class="fa fa-link"></i></a>
+                                    <div class="dropdown-menu">
+                                        <div class="input-group m-l-xs m-r-xs">
+                                            <input class="form-control input-sm" placeholder="URL" type="text" data-edit="createLink">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-white btn-sm" type="button">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="btn btn-white btn-sm" data-edit="unlink" title="" data-original-title="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm" title="" id="pictureBtn" data-original-title="Insert picture (or just drag &amp; drop)"><i class="fa fa-picture-o"></i></a> <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" style="opacity: 0; position: absolute; top: 0px; left: 0px; width: 34px; height: 29px;">
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-white btn-sm" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a> <a class="btn btn-white btn-sm" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+                                </div>
+                                <input type="text" class="form-control-trans pull-left" data-edit="inserttext" id="voiceBtn" x-webkit-speech="" style="width: 25px; height: 28px; display: none;">
+                            </div>
+                            <div id="editor" class="form-control" style="overflow:scroll;height:150px;max-height:150px" contenteditable="true"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnWildCards" class="btn btn-info">See WildCards</button>
+                <button type="button" data-cid="" class="btn btn-success" onclick="SaveAndClose(this)"><i class="fa fa-envelope"></i>&nbsp;Send and Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media screen and (min-width: 768px) {
+        .custom-class {
+            width: 70%; /* either % (e.g. 60%) or px (400px) */
+        }
+    }
+</style>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/wysiwyg/jquery.hotkeys.js")"></script>
+    <script src="@Url.Content("~/lib/wysiwyg/bootstrap-wysiwyg.js")"></script>
+    <script src="@Url.Content("~/lib/wysiwyg/demo.js")"></script>
+    
+    <script type="text/javascript">
+        function SaveAndClose(btn) {
+            $(btn).prop("disabled", true);
+            $('#Body').val($('#editor').html());
+            $('#frmEmail').submit();
+        }
+
+        $("#btnWildCards").click(function() {
+            alert("Use '@@' before each one. Ex.: @@Name, @@Email\n" +
+                 "\n" +
+                "@@Name\n" +
+                "@@Phone\n" +
+                "@@Email");
+        });
+
+        $("#btnEmailForm").click(function() {
+            var bcc = $("input[name='Id']:checked").map(function() {
+                return $(this).data("name") + " <" + $(this).data("email") + ">\n";
+            }).get();
+
+            var ids = $("input[name='Id']:checked").map(function () {
+                return $(this).val();
+            }).get();
+
+            $("#Ids").val(ids);
+            $("#To").attr("readonly","").val(bcc);
+        });
+
+        $("#chkAll").click(function () {
+            $("input[name='Id']").prop("checked", $(this).prop("checked"));
+        });
+
+        $('[data-ride="datatables"]')
+            .each(function () {
+                var oTable = $(this)
+                    .dataTable({
+                        "bPaginate": false,
+                        "sDom": "<'row'<'col-xs-5'l><'col-xs-7'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                        "sPaginationType": "full_numbers"
+                    });
+            });
+    </script>
+}
+
+@RenderSection("scripts2", required: false)

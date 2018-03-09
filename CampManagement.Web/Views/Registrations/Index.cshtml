@@ -1,0 +1,306 @@
+﻿@model IEnumerable<CampManagement.Domain.Entities.Registration>
+
+@{
+    ViewBag.Title = DateTime.Now.Year + " Registrations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-sm-12" style="padding-bottom: 10px">
+    <div class="row">
+        <div class="form-group">
+            <a href="@Url.Action("Create")" class="btn btn-success pull-right"><i class="fa fa-sitemap"></i>&nbsp;New Registration</a>
+        </div>
+    </div>
+</div>
+<div class="col-sm-12">
+    <div class="row">
+        <section class="panel">
+            <header class="panel-heading font-bold">List of Registrations</header>
+            <div class="table-responsive">
+                <table class="table table-striped" data-ride="datatables" id="mytable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        @if (Request["campId"] == "0" || Request["campId"] == null)
+                        {
+                            <th>Name</th>
+                        }
+                        <th>Camper</th>
+                        @if (Request["campId"] != "0" && Request["campId"] != null)
+                        {
+                            <th>Grade</th>
+                        }                  
+                        <th>Guardian</th>
+                        @if (!Request.Browser.IsMobileDevice)
+                        {
+                            <th>Email</th>
+                            <th>Phone</th>
+                        }
+                        <th>Total</th>
+                        <th>Balance</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table> 
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+    <script src="@Url.Content("~/js/clipboard.min.js")"></script>
+    
+    <script language="javascript">
+        function format2(n, currency) {
+            return currency + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+        }
+
+        function getCssClass(row) {
+            return row.Cancelled ? "regcancelled" : "";
+        }
+
+        var clip = new Clipboard('#mytable tbody input,select[data-clipboard-text],textarea');
+        clip.on('success',
+            function (e) {
+                $(e.trigger).fadeOut().fadeIn();
+            });
+
+        var oTable = null;
+        $('[data-ride="datatables"]')
+            .each(function () {
+                oTable = $(this)
+                    .dataTable({
+                        "responsive": true,
+                        "paging": false,
+                        "bProcessing": true,
+                        @if (Request["campId"] == "0" || Request["campId"] == null)
+                        {
+                            <text>
+                        "order": [[1, "desc"], [0, "asc"]],
+                        </text>
+                        }
+                        else
+                        {
+                            <text>
+                            "order": [[0, "asc"]],
+                            </text>
+                        }
+                        "sAjaxSource": '@Url.Action("ThisYearRegistrations", "Registrations")@Html.Raw(Request.Url.Query)',
+                        "sAjaxDataProp": "",
+                        "sDom": "<'row'<'col-xs-4'<'#dt_camps.dataTables_length'>><'col-xs-4'<'#rFilters.dataTables_length'>><'col-xs-4'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                        "sPaginationType": "full_numbers",
+                        "aoColumns": [
+                            {
+                                "mData": "RegistrationId",
+                                "class": "details-control",
+                                "width": "55px",
+                                "render": function (data, type, row) {
+                                    return "<span><i style='display:inline;' class='fa fa-plus-square' id='reg" + row.RowNumber + "'></i>&nbsp;R" + row.RegistrationId + "</span>";
+                                }
+                            },
+                            @if (Request["campId"] == "0" || Request["campId"] == null)
+                            {
+                                <text>
+                                    { "mData": "Name" },
+                                </text>
+                            }
+                            { "mData": "CamperName" },
+                            @if (Request["campId"] != "0" && Request["campId"] != null)
+                            {
+                                <text>
+                                    { "mData": "Grade" },
+                                </text>
+                            }
+                            { "mData": "GuardianName" },
+                            @if (!Request.Browser.IsMobileDevice)
+                            {
+                                <text>
+                                    {
+                                        "mData": "Email",
+                                        "sorting": false,
+                                        "render": function (data, type, row) {
+                                            if (row.EmailConfirmed === true) {
+                                                return "<span>" +
+                                                    "<i style='color:green' class='fa fa-check-circle'></i></span>&nbsp;" + row.Email;
+                                            }
+                                            return "<span><i data-guardianid='" + row.GuardianId + "' style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i></span>&nbsp;" + row.Email;
+                                        }
+                                    },
+                                    {
+                                        "mData": "Phone",
+                                        "sorting": false,
+                                        "render": function (data, type, row) {
+                                            return '<span style="white-space: nowrap;">' + formatPhoneNumber(row.Phone) + '</span>';
+                                        }
+                                    },
+                                </text>
+                            }
+                        {
+                            "mData": "Price",
+                            "className": "dt-center",
+                            "render": function (data, type, row) {
+                                if (["filter", "sort", "type"].indexOf(type) > -1) {
+                                    if (row.Cancelled) return 0;
+                                    return row.Price + row.Activity;
+                                }
+                                if (row.Cancelled) return "-";
+                                return format2(row.Price + row.Activity, '$');
+                            }
+                        },
+                        {
+                            "mData": "TotalRegistration",
+                            "className": "dt-center",
+                            //"sType": "rank",
+                            "render": function (data, type, row) {
+                                var total = 0;
+
+                                total = (row.TotalRegistration + row.TotalActivities);
+                                if (["filter", "sort", "type"].indexOf(type) > -1) {
+                                    if (row.Cancelled) return -1;
+                                    if (row.CompletedDate == null || (total - row.TotalPayments == 0)) return 0;
+                                    if (total - row.TotalPayments > 0) return total - row.TotalPayments;
+                                    return row.TotalRegistration;
+                                }
+                                if (row.CompletedDate == null) return "<span title='Not yet finished' style='cursor: help; color:red'><i class='fa fa-exclamation'></i>&nbsp;N/F</span>";
+                                if (row.Cancelled) return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
+                                if (total - row.TotalPayments > 0)
+                                    return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
+                                return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>Paid</a>";
+                            }
+                        },
+                        {
+                            "mData": "RegistrationId",
+                            "sorting": false,
+                            "render": function (data, type, row) {
+                                if (row.Cancelled) {
+                                    return "<button type='button' class='btn btn-danger btn-sm'><i class='fa fa-thumbs-o-down'></i>&nbsp;Cancelled</button>";
+                                }
+                                if (row.Registered) {
+                                    //return "<button type='button' class='btn btn-success btn-sm'><i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed</button>";
+                                    return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-success btn-sm'>Edit</a>";
+                                }
+                                return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                            }
+                        }
+                        ],
+                        "createdRow": function (row, data, dataIndex) {
+
+                            if (data.Cancelled) {
+                                // Add a class to the row
+                                $(row).children().addClass('text-danger');
+                            }
+                        }
+                    });
+
+                // Array to track the ids of the details displayed rows
+                var detailRows = [];
+
+                $('#mytable tbody')
+                    .on('click',
+                        'tr td.details-control',
+                        function () {
+                            var tr = $(this).closest('tr');
+                            var row = oTable.api().row(tr);
+                            var idx = $.inArray(tr.attr('id'), detailRows);
+
+                            if (row.child.isShown()) {
+                                tr.removeClass('details');
+                                $("#reg" + row.data().RowNumber).removeClass("fa-minus-square-o").addClass("fa-plus-square");
+                                row.child.hide();
+
+                                // Remove from the 'open' array
+                                detailRows.splice(idx, 1);
+                            }
+                            else {
+                                tr.addClass('details');
+                                $.get("@Url.Action("Details", "Registrations")/" + row.data().RegistrationId + "?camperId=" + row.data().CamperId,
+                                    function (data) {
+                                        $("#reg" + row.data().RowNumber).removeClass("fa-plus-square").addClass("fa-minus-square-o");
+                                        row.child(data).show();
+                                        $.post("@Url.Action("GetExtraActivities","ExtraActivities")/" + row.data().RegistrationCamperId, function (data) {
+                                            var ea = [];
+                                            $(data.CamperExtraActivities).each(function (i, item)
+                                            {
+                                                $(data.ExtraActivities).each(function (y, activity) {
+                                                    if (item.ActivityId == activity.ActivityId) {
+                                                        ea.push(activity.Description);
+
+                                                    }
+                                                });
+                                            });
+                                            $("#Extra_" + row.data().RegistrationCamperId).val(ea.join(", "));
+                                        });
+                                    });
+
+                                // Add to the 'open' array
+                                if (idx === -1) {
+                                    detailRows.push(tr.attr('id'));
+                                }
+                            }
+                        });
+
+                // On each draw, loop over the `detailRows` array and show any child rows
+                oTable.on('draw',
+                    function () {
+                        $.each(detailRows,
+                            function (i, id) {
+                                $('#' + id + ' td.details-control').trigger('click');
+                            });
+                    });
+            });
+
+        //Adding form...
+        $("#mytable_wrapper .row").first().wrap("<form action='@Url.Action("Index")' id='frmRegistrations'>");
+
+        $("#rFilters")
+            .css("text-align", "center")
+            .html("<select class='form-control' name='filter' id='filter'>" +
+                 "<option value='0'>- No Filter -</option>" +
+                 "<option value='5'>Not Cancelled</option>" +
+                 "<option value='6'>No Payment</option>" +
+                 "<option value='1'>Registration Completed</option>" +
+                 "<option value='2'>Registered not Finalized</option>" +
+                 "<option value='3'>Cancelled Completed</option>" +
+                 "<option value='4'>Cancelled not Finalized</option></select>")
+            .find("select")
+            .val('@(String.IsNullOrEmpty(Request["filter"]) ? "0" : Request["filter"])')
+            .css("width", "initial");
+
+        $("#dt_camps")
+            .css("text-align", "center")
+            .html("<label><select class='form-control' name='campId' style='width:100%' id='camps'><option value='0'>All</option></select></label>");
+
+        $.ajax({
+            url: "@Url.Action("GetThisYearSetups", "CampSetups")",
+            method: "GET",
+            cache: false,
+            success: function (data) {
+                $(data)
+                    .each(function (i, camp) {
+                        $("#camps")
+                            .append("<option value='" +
+                                camp.CampId +
+                                "' " +
+                                (camp.CampId == '@(Request["campId"])'
+                                    ? "selected"
+                                    : "") +
+                                ">" +
+                                camp.Name +
+                                "</camp>");
+                    });
+
+
+            }
+        });
+
+        $("#camps,#filter")
+            .on("change",
+                function () {
+                    $("#frmRegistrations").submit();
+                });
+    </script>
+}

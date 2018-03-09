@@ -1,0 +1,212 @@
+﻿@model CampManagement.Domain.Entities.Guardian
+
+@{
+    ViewBag.Title = "<i class='fa fa-user'></i>&nbsp;Guardian Management";
+}
+
+<style>
+    .vcenter {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-5">
+        <section class="panel">
+            <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.GuardianId == 0 ? "New" : "Edit") Guardian</header>
+            <div class="panel-body">
+                @using (Html.BeginForm(Model == null || Model.GuardianId == 0 ? "Create" : "Edit", 
+                            "Guardians", new { autoclose = Request["autoclose"] }, FormMethod.Post, 
+                            new { @class = "", role = "form", id = "frmGuardians" }))
+                {
+                    <div class="row valign">
+                        <div class="col-xs-12"> 
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.EmailConfirmed)
+                            @Html.HiddenFor(model => model.CreatedDate)
+                            @Html.HiddenFor(model => model.RowGuid)
+                            @Html.HiddenFor(model => model.CreatedBy)
+                            @Html.HiddenFor(model => model.GuardianId)
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+                            <input type="hidden" name="autoclose" value="@(ViewBag.autoclose)" />
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", Value = Model?.Name ?? Request["name"] } })
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label" })
+                                        &nbsp;
+                                        @if (Model.GuardianId > 0)
+                                        {
+                                            if (Model?.EmailConfirmed == true)
+                                            { <i style="color:green" class='fa fa-check-circle'></i>  }
+                                            else
+                                            { <i data-guardianid="@Model.GuardianId" style='color:red' class='fa fa-exclamation-circle' title='Email not confirmed'></i> }
+                                        }                                        
+                                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "my@email.com" } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control", placeholder = "XXX-XXX-XXXX" } })
+                                    </div>
+                                </div>
+                                
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Address1, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control", placeholder = "" } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", placeholder = "" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Address2, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "AP#, Suite, Ext" } })
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.State, htmlAttributes: new { @class = "control-label" })
+                                        @Html.DropDownListFor(x => x.State, CampManagement.Web.Models.States.GetStatesList(), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Zip, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Zip, new { htmlAttributes = new { @class = "form-control", placeholder = "" } })
+                                    </div>
+                                </div>
+                                @if (Model?.GuardianId > 0)
+                                {
+                                    <div class="col-xs-12">
+                                        <div class="checkbox">
+                                            <label class="checkbox-custom">
+                                                @Html.CheckBoxFor(model => model.Active)
+                                                <i class="fa fa-square-o checked"></i> Active ?
+                                            </label>
+                                            <br/>
+                                            <span class="text-sm">** Guardian is active if he/she is still sending children to camp</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        @if (Model == null || Model.GuardianId == 0)
+                        {
+                            <button type="submit" class="btn btn-default" id="btnCreate">
+                                <i class="fa fa-save text"></i>
+                                Create
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-success" id="btnSave">
+                                <i class="fa fa-save text"></i>
+                                Save
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-7">
+        <section class="panel">
+            <header class="panel-heading font-bold">
+                Existing Guardians
+            </header>
+            <div class="table-responsive">
+                <table class="table table-striped m-b-none" data-ride="datatables">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Year</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet"/>
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+
+    <script>
+        $("#Phone").mask("(999) 999-9999");
+        $("#Zip").mask("99999");
+        $('[data-ride="datatables"]')
+            .each(function() {
+                var oTable = $(this)
+                    .dataTable({
+                        "bProcessing": true,
+                        "sAjaxSource": '@Url.Action("GetAll", "Guardians")',
+                        "sAjaxDataProp": "",
+                        "sDom": "<'row'<'col-xs-5'l><'col-xs-7'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                        "sPaginationType": "full_numbers",
+                        "aoColumns": [
+                            { "mData": "Name" },
+                            {
+                                "mData": "Phone",
+                                "render": function(data, type, row) {
+                                    return formatPhoneNumber(row.Phone);
+                                }
+                            },
+                            { "mData": "Email" },
+                            {
+                                "mData": "GuardianId",
+                                "render": function (data, type, row) {
+                                    return moment(row.CreatedDate).format("YYYY");
+                                }
+                            },
+                            {
+                                "mData": "GuardianId",
+                                "render": function (data, type, row) {
+                                    return "<a href='@Url.Action("Manage", "Guardians", new {id = ""})/" + row.GuardianId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
+                                }
+                            }
+                        ]
+                    });
+            });
+
+
+    </script>
+    @if (Convert.ToBoolean(TempData["close"]))
+    {
+        <script type="text/javascript">
+            opener.location.reload();
+            window.close();
+        </script>
+    }
+}

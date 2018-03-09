@@ -1,0 +1,203 @@
+﻿@model CampManagement.Domain.Entities.Camper
+
+@{
+    ViewBag.Title = "<i class='fa fa-group'></i>&nbsp;Camper Management";
+}
+
+<style>
+    .vcenter {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-5">
+        <section class="panel">
+            <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.CamperId == 0 ? "New" : "Edit") Camper</header>
+            <div class="panel-body">
+                @using (Html.BeginForm(Model == null || Model.CamperId == 0 ? "Create" : "Edit", "Campers", new { autoclose = Request["autoclose"] }, FormMethod.Post, new { @class = "", role = "form", id = "frmCampers" }))
+                {
+                    <div class="row valign">
+                        <div class="col-xs-12">
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.CreatedDate)
+                            @Html.HiddenFor(model => model.CreatedBy)
+                            @Html.HiddenFor(model => model.CamperId)
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label"})
+                                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", Value = Request["name"] != null ? Request["name"].Split(' ')[0] : Model?.FirstName } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label"})
+                                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", Value = Request["name"] != null && Request["name"].IndexOf(" ", StringComparison.CurrentCultureIgnoreCase) > 0 ? Request["name"].Split(' ')[Request["name"].Split(' ').Length - 1] : Model?.LastName } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "my@email.com" } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control", placeholder = "XXX-XXX-XXXX" } })
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.BirthDate, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.BirthDate, new { htmlAttributes = new { @class = "form-control", placeholder = "MM/DD/YYYY", Value = Model == null || Model.BirthDate == default(DateTime) ? "" : Model.BirthDate.ToString("MM/dd/yyyy") } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CabinMates, new { @class = "control-label" })
+                                        @Html.TextAreaFor(model => model.CabinMates, new { @class = "form-control", rows = 2, placeholder = "Friends that he/she would like to be in the same cabin" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Limitations, new { @class = "control-label" })
+                                        @Html.TextAreaFor(model => model.Limitations, new { @class = "form-control", rows = 2, placeholder = "ex.: Muscular dystrophy, Push a heavy object" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Gender</label>&nbsp;&nbsp;&nbsp;
+                                        <label class="radio-inline">
+                                            <input type="radio" name="Gender" value="M" @(Model?.Gender == "M" ? "checked='checked'" : "")>Male
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="Gender" value="F" @(Model?.Gender == "F" ? "checked='checked'" : "")>Female
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                @if (Model?.CamperId > 0)
+                                {
+                                    <div class="col-xs-12">
+                                        <div class="checkbox">
+                                            <label class="checkbox-custom">
+                                                @Html.CheckBoxFor(model => model.Active)
+                                                <i class="fa fa-square-o checked"></i> Active ?
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        @if (Model == null || Model.CamperId == 0)
+                        {
+                            <button type="submit" class="btn btn-default" id="btnCreate">
+                                <i class="fa fa-save text"></i>
+                                Create
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-success" id="btnSave">
+                                <i class="fa fa-save text"></i>
+                                Save
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-7">
+        <section class="panel">
+            <header class="panel-heading font-bold">
+                Existing Campers
+            </header>
+            <div class="table-responsive">
+                <table class="table table-striped m-b-none" data-ride="datatables">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>BirthDate</th>
+                            <th>Year</th>                            
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section scripts {
+    <link href="@Url.Content("~/lib/datatables/datatables.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/lib/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+    <script>
+        $("#Phone").mask("(999) 999-9999");
+        $("#BirthDate").mask("99/99/9999");
+        $('[data-ride="datatables"]')
+            .each(function() {
+                var oTable = $(this)
+                    .dataTable({
+                        "bProcessing": true,
+                        "sAjaxSource": '@Url.Action("GetAll", "Campers")',
+                        "sAjaxDataProp": "",
+                        "sDom": "<'row'<'col-xs-5'l><'col-xs-7'f>r>t<'row'<'col-xs-6'i><'col-xs-6'p>>",
+                        "sPaginationType": "full_numbers",
+                        "aoColumns": [
+                            {
+                                "mData": "FirstName",
+                                "render": function (data, type, row) {
+                                    return row.FirstName + ' ' + row.LastName;
+                                }
+                            },
+                            {
+                                "mData": "BirthDate",
+                                "render": function (data, type, row) {
+                                    return moment(row.BirthDate).format("MM/DD/YY");
+                                }
+                            },
+                            {
+                                "mData": "CamperId",
+                                "render": function (data, type, row) {
+                                    return moment(row.CreatedDate).format("YYYY");
+                                }
+                            },
+                            {
+                                "mData": "CamperId",
+                                "render": function (data, type, row) {
+                                    return "<a href='@Url.Action("Manage", "Campers", new {id = ""})/" + row.CamperId + "' class='btn btn-info btn-sm btn-rounded' btn-sm btn-rounded'>Edit</a>";
+                                }
+                            }
+                        ]
+                    });
+            });
+    </script>
+    @if (Convert.ToBoolean(TempData["close"]))
+    {
+        <script type="text/javascript">
+            opener.location.reload();
+            window.close();
+        </script>
+    }
+}

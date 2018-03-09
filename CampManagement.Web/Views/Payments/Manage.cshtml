@@ -1,0 +1,285 @@
+﻿@model CampManagement.Domain.Entities.Registration
+
+@{
+    if (Model == null)
+    {
+        ViewBag.Title = "<i class='fa fa-dollar'></i>&nbsp;Payments";
+    }
+    else
+    {
+        ViewBag.Title = "<i class='fa fa-dollar'></i>&nbsp;Managing payments of registration <b>#" + Model?.RegistrationId + "</b>";
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-sm-12">
+    <section class="panel">
+        <header class="panel-heading font-bold" id="pnHeader">
+            This Registration's balance is: 
+        </header>
+        <div class="panel-body">
+            <div class="tab-pane active">
+                @if (Model == null)
+                {
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <section class="panel">
+                                <header class="panel-heading font-bold">Search Registration</header>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <div class="col-xs-10">
+                                            <input class="form-control" id="txtRegistrationId" placeholder="Search for registration number #" type="number" />
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button class="btn btn-info" id="btnSearch">GO!</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 col-xs-12">
+                            <section class="panel">
+                                <header class="panel-heading font-bold">Make a payment</header>
+                                <div class="panel-body">
+                                    <div class="form-horizontal">
+                                        @using (Html.BeginForm("Manage", "Payments", new { id = Model.RegistrationId }, FormMethod.Post, new { @class = "", role = "form", id = "frm" }))
+                                        {
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                            <input type="hidden" name="RegistrationId" value="@Model.RegistrationId" />
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-2">Method</label>
+                                                <div class="col-md-10">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="PaymentTypeId" value="1">Cash
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="PaymentTypeId" value="2">Check
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="PaymentTypeId" value="3">Credit Card
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" id="rbOffer" name="PaymentTypeId" value="4" disabled="disabled"> Offer
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-2">Date</label>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="Date" id="Date" placeholder="dd/mm/yyyy" value="@TempData["Date"]" class="input-sm datepicker-input form-control form-date" />
+                                                </div>
+                                                <label class="control-label col-md-2">Amount</label>
+                                                <div class="col-md-4">
+                                                    <input type="number" name="Amount" data-offer="0" id="Amount" value="@TempData["Amount"]" class="form-control" />
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-2">Notes</label>
+                                                <div class="col-md-10">
+                                                    <textarea type="text" class="form-control" name="Notes" placeholder="Type some notes about this payment">@TempData["Notes"]</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="col-md-offset-2 col-md-10">
+                                                    <div class="pull-right">
+                                                        <button type="button" class="btn btn-default" id="btnCreate">
+                                                            <i class="fa fa-save text"></i>
+                                                            Create
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel">
+                                <header class="panel-heading font-bold" id="paymentsHeading">Existing payments</header>
+                                <section class="panel-body slim-scroll" data-height="230px" id="existingPayments">
+                                    <article class="media">
+                                        <span class="pull-left thumb-sx">
+                                            @if (User.IsInRole("Administrators"))
+                                            {
+                                                <button class="btn btn-xs btn-danger" type="button" data-paymentid="{{id}}">Delete</button>
+                                            }
+                                        </span>
+                                        <div class="media-body">
+                                            <div class="pull-right media-xs text-center text-muted">
+                                                <strong class="h4">{{balance}} <i class="fa fa-{{img}}" style="font-size: 20px; color: {{color2}}"></i></strong><br> 
+                                                <small class="label bg-light">{{date2}}</small>
+                                            </div>
+                                            @*<span class="h4">Payment of {{amount}} </span> <span class="label label-{{color}}">{{type}}</span>*@ 
+                                            <span class="h4">{{type}} </span>
+                                            <small class="block m-t-sm">{{notes}}</small>
+                                            <em class="text-xs">Added by <span class="text-danger">{{user}}</span> on <span class="text-danger">{{date}}</span></em>
+                                        </div>
+                                    </article>
+                                </section>
+                            </section>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-xs-12">
+                            <section class="panel" id="pnSetup">
+                                <header class="panel-heading font-bold">Registration Information</header>
+                                <div class="panel-body">
+                                    <div class="form-group" id="setupContent">
+                                        @if (Model != null)
+                                        {
+                                            Html.RenderAction("CurrentSetup", "Registrations", Model);
+                                        }
+                                        else
+                                        {
+                                            <label class="col-sm-12 control-label">* Add a Guardian and at least one Camper</label>
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</div>
+
+@section scripts {
+    <script src="@Url.Content("~/js/registration.js?b=1")" data-registrationid="@Model.RegistrationId"></script>
+    <script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+    <script type="text/javascript">
+        var $template = $("#existingPayments").html();
+        var color = "";
+        function getPaymentType(id) {
+            switch (id) {
+            case 1:
+                color = "success";
+                return "Cash";
+            case 2:
+                color = "info";
+                return "Check";
+            case 3:
+                color = "default";
+                return "Credit Card";
+            case 4:
+                color = "danger";
+                return "Offer";
+            }
+            return "";
+        }
+        $(document).ready(function () {
+            $("#btnSearch").click(function () {
+                if ($("#txtRegistrationId").val() !== "")
+                    window.location.href = '@Url.Action("Manage", "Payments", new { id = "" })/' + $("#txtRegistrationId").val();
+            });
+
+            $("#frm .datepicker-input").datepicker();
+            $("#frm .datepicker-input").on('changeDate', function (ev) {
+                $(this).datepicker('hide');
+            });
+
+            
+            $("#existingPayments").empty();
+
+            $("#btnCreate").click(function () {
+                if ($("#rbOffer").prop("checked")) {
+                    if ($("#Amount").data("offer") < $("#Amount").val()) {
+                        alert("Offer amount cannot exceed " + $("#Amount").data("offer"));
+                        return;
+                    }
+
+                    if ($("#Amount").val() < 0) {
+                        alert("Offer cannot be used for returns");
+                        return;
+                    }
+                }
+
+                $("#frm").submit();
+            });
+
+            $("#existingPayments").on("click", "button", function () {
+                $.ajax({
+                    url: "@Url.Action("DeletePayment","Payments", new { id = Model.RegistrationId })?paymentId=" + $(this).data("paymentid"),
+                    method: "POST",
+                    success: function(data) {
+                        if (data) {
+                            location.href = "@Url.Action("Manage","Payments", new { id = Model.RegistrationId })";
+                        }
+                    }
+                });
+            });
+
+            
+            $("#existingPayments").empty();
+
+            $.ajax({
+                url: "@Url.Action("GetPayments","Payments")/@Model.RegistrationId",
+                method: "POST",
+                success: function (data) {
+                    var totalRegistration = parseFloat($("#totalAmount").data("amount"));
+                    var subTotal = totalRegistration;
+                    var totalPayments = 0;
+                    
+
+                    if (data.length == 0) {
+                        $("#paymentsHeading").html("No payments found");
+                        $("#existingPayments").hide();
+                        totalPayments = 0;
+                    }
+                    else {
+                        $(data).each(function (i, item) {
+                            var s = $template;
+                            subTotal = subTotal - item.Amount;
+                            totalPayments = totalPayments + item.Amount;
+                            s = s.replace("{{id}}", item.PaymentId);
+                            if (subTotal != 0)
+                                s = s.replace("{{img}}", item.Amount > 0 ? "arrow-circle-o-down" : "arrow-circle-o-up");
+                            else
+                                s = s.replace("{{img}}", "check-circle");
+                            s = s.replace("{{color2}}", item.Amount > 0 ? "green" : "red");
+                            s = s.replace("{{balance}}", "$" + item.Amount.toFixed(2));
+                            //s = s.replace("{{balance}}", "$" + subTotal.toFixed(2));
+                            s = s.replace("{{date}}", moment(item.CreatedDate).format("MMM DD, YYYY"));
+                            s = s.replace("{{date2}}", moment(item.Date).format("DD/MMM"));
+                            s = s.replace("{{user}}", item.UserName);
+                            s = s.replace("{{notes}}", item.Notes != null ? item.Notes : "");
+                            s = s.replace("{{type}}", getPaymentType(item.PaymentTypeId));
+                            s = s.replace("{{color}}", color);
+                            $("#existingPayments").append(s).append("<hr>");
+                        });
+
+                        $("#existingPayments hr").last().remove();
+                        $("#existingPayments").append("<div class='media-body'><h3 class='pull-left'>Paid: </h3><h3 class='pull-right'>$ " + (totalPayments).toFixed(2) + "</h3></div><div class='clear'></div>");
+                        $("#existingPayments").append("<div class='media-body'><h3 class='pull-left'>Balance: </h3><h3 class='pull-right'>$ " + (totalRegistration - totalPayments).toFixed(2) + "</h3></div>");
+                    }
+
+                    if (totalPayments != totalRegistration || totalPayments == 0)
+                        $("#pnHeader").append("<span style='color:red'>$ " + (totalRegistration - totalPayments).toFixed(2) + "</span>");
+                    else
+                        $("#pnHeader").append("<span style='color:green'>$ 0.00</span>");
+                },
+                error: function(data) {
+                    alert('Error listing existing payments');
+                }
+            });
+
+            $.ajax({
+                url: "@Url.Action("GetOfferAvailable", "Offers", new { year = DateTime.Now.Year })",
+                method: "GET",
+                success: function(total) {
+                    if (total > 0) {
+                        $("#rbOffer").prop("disabled", false);
+                        $("#Amount").data("offer", total);
+                        $("#rbOffer").parent().append(" ( $" + total.toFixed(2) + " )");
+                    }
+                }
+            });
+        });
+    </script>
+}

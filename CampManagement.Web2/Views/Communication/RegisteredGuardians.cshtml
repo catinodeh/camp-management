@@ -1,0 +1,64 @@
+﻿@model List<CampManagement.Domain.Entities.RegisteredGuardianEmail>
+@{
+    ViewBag.Title = "Guardians with registrations in 2017";
+    Layout = "~/Views/Shared/_LayoutCommunication.cshtml";
+}
+
+<section class="panel">
+    <header class="panel-heading">
+        <div class="row">
+            <div class="col-xs-6">List Of Guardians</div>
+            <div class="col-xs-6" style="text-align: right"><button class="btn btn-warning btn-sm" type="button" id="btnCheckNotConfirmed"><i class="fa fa-check-square-o"></i>&nbsp;Check not confirmed</button></div>
+        </div>  
+    </header>
+    <div class="table-responsive">
+        <table data-ride="datatables" class="table table-striped m-b-none">
+            <thead>
+            <tr>
+                <th><input type="checkbox" id="chkAll" checked="checked" style="height: 12px" /></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Email confirmed ?</th>
+                <th>Added on</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var guardian in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="Id" checked="checked" data-confirmed="@guardian.EmailConfirmed" data-email="@guardian.Email" data-name="@guardian.Name" value="@guardian.GuardianId" style="height: 12px" />
+                    </td>
+                    <td>@guardian.Name</td>
+                    <td>@guardian.Email</td>
+                    <td>@(guardian.EmailConfirmed == true ? "Yes" : "No")</td>
+                    <td>@(guardian.CreatedDate.ToString("d"))</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="5">
+                    <button id="btnEmailForm" class="btn btn-info pull-right" type="button" data-toggle="modal" data-target="#emailform"><i class="fa fa-external-link-square"></i>&nbsp;Compose Email</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</section>
+
+@section scripts2 {
+    <script type="text/javascript">
+        $("#btnCheckNotConfirmed").click(function () {
+            $("#Template").val("tem_bdTJWQmM6bDGpc3KhpVtM3cD");
+            $("#Method").val("2");
+             $("input[data-confirmed]").each(function() {
+                if ($(this).data("confirmed") == "False") {
+                    $(this).prop("checked", true);
+                } else {
+                    $(this).prop("checked", false);
+                }
+             });
+        });
+    </script>
+}

@@ -1,0 +1,99 @@
+﻿@model CampManagement.Domain.Entities.Registration
+
+@{
+    ViewBag.Title = "<i class='fa fa-sitemap'></i>&nbsp;Managing registration <b>#" + Model.RegistrationId + "</b>";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .camper {
+        padding-left: 15px;
+    }
+
+    .row h3 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+</style>
+
+<div class="col-sm-12">
+    <section class="panel">
+        <header class="panel-heading bg-light">
+            <div>@Html.Raw(Model == null || Model.RegistrationId == 0 ? "New" : "Edit") Registration</div> 
+        </header>
+        <div class="panel-body">
+            <div class="tab-pane active" id="search">                
+                <div class="row">
+                    <div class="col-lg-5 col-md-5 col-xs-12">
+                        <section class="panel" id="pnSearch">
+                            <header class="panel-heading font-bold">Search Members</header>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <div class="col-xs-9 col-lg-9">
+                                        <input type="text" class="form-control" placeholder="Type Name, Phone, Email..." id="txtCriteria" />    
+                                    </div>
+                                    <div class="col-xs-2 col-lg-2">
+                                        <button type="submit" class="btn btn-default" id="btnSearch">
+                                            <i class="fa fa-search text"></i>
+                                            Search
+                                        </button>    
+                                    </div>
+                                </div>
+                                <br/>
+                                <br />
+                                <br />
+                                <div class="form-group">                                                                        
+                                    <div class="col-sm-12" id="searchResult">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-7 col-md-7 col-xs-12">
+                        <section class="panel" id="pnSetup">
+                            <header class="panel-heading font-bold">Registration Members</header>
+                            <div class="panel-body">
+                                <div class="form-group" id="setupContent">
+                                    @if (Model != null)
+                                    {
+                                        Html.RenderAction("CurrentSetup", Model);
+                                    }
+                                    else
+                                    {
+                                        <label class="col-sm-12 control-label">* Add a Guardian and at least one Camper</label>
+                                    }
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    
+</div>
+
+<script src="@Url.Content("~/js/registration.js?b=1")" data-registrationid="@Model.RegistrationId"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("body").on("click", "a.validategrade", function(e) {
+            var missingSave = false;
+            $("input.grade").each(function() {
+                if ($(this).val() == "0" && !missingSave) missingSave = true;
+            });
+            if (missingSave) {
+                alert("Grades cannot be zero. Please fix them first.");
+                e.preventDefault();
+            } else {
+                if ($("button.update:visible").length > 0) {
+                    alert("Please hit update to complete Camper setup.");
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+</script>

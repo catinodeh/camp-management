@@ -1,0 +1,180 @@
+﻿@using CampManagement.Web.Models
+@model CampManagement.Domain.Entities.RegistrationCamper
+
+@{
+    var disabled = ViewData["readonly"] != null ? "disabled='disabled'" : "";
+    Layout = null;
+}
+
+<br/>
+<div id="camper@(Model.Camper.CamperId)">
+    <h2 style="display: inline;">
+        <i class='fa fa-@(Model.Camper.Gender == "M" ? "male" : "female")'></i>&nbsp;@Model.Camper.FirstName @Model.Camper.LastName
+    </h2>
+    <a href="@Url.Action("Manage", "Campers", new { id = Model.CamperId, autoclose = "1" })" style="display: inline; color: blue" target="_blank">Edit</a>
+    <hr style="clear:both;" />
+    @Html.HiddenFor(model => model.CamperId, new { name = "CamperId" })
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Camper.Email, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Camper.Email, new {htmlAttributes = new {@class = "form-control",  @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Camper.Phone, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Camper.Phone, new {htmlAttributes = new {@class = "form-control", @readonly = "" } })
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Camper.BirthDate, htmlAttributes: new {@class = "control-label"})
+                @Html.EditorFor(model => model.Camper.BirthDate, new {htmlAttributes = new {@class = "form-control", @readonly = "", Value = Model == null || Model.Camper.BirthDate == default(DateTime) ? "" : Model.Camper.BirthDate.ToString("MM/dd/yyyy")}})
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="form-group">
+                <label class="control-label">Grade</label>
+                <input type="number" @disabled class="form-control grade" value="@Model.Grade" onchange="$('#btnUpdate_@Model.RegistrationCamperId').show()" id="Grade_@Model.RegistrationCamperId" />
+            </div>
+        </div>
+        <div class="col-xs-@(User.IsInRole("Administrators") ? "6" : "8")">
+            <div class="form-group">
+                <label class="control-label">Camp</label>
+                <select @disabled class="form-control" onchange="$('#btnUpdate_@Model.RegistrationCamperId').show(); $('#Ae_@Model.RegistrationCamperId').prop('disabled', true);" id="CampSetupId_@Model.RegistrationCamperId">
+                    @{
+                        using (var db = new CampManagement.Data.CampManagementDbContext())
+                        {
+                            var camps = (from c in db.Camps
+                                join cs in db.CampSetups on c.CampId equals cs.CampId
+                                where cs.Year == DateTime.Now.Year
+                                orderby c.Name
+                                select new AvailableCamps()
+                                {
+                                    CampSetupId = cs.CampSetupId,
+                                    Description = c.Name,
+                                    FromGrade = cs.FromGrade,
+                                    ToGrade = cs.ToGrade,
+                                    Price = cs.CurrentPrice
+                                }).ToList();
+                            foreach (var availableCamps in camps)
+                            {
+                                <option value="@availableCamps.CampSetupId" @(Model.CampSetupId == availableCamps.CampSetupId ? "selected=selected" : "")>@availableCamps.Description (@($"{availableCamps.FromGrade}th/{availableCamps.ToGrade}th")) @availableCamps.Price.ToString("C")</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        @if (User.IsInRole("Administrators"))
+        {
+            <div class="col-xs-4">
+                <div class="form-group">
+                    <label class="control-label">Price</label>
+                    <input type="number" @disabled class="form-control" id="Price_@Model.RegistrationCamperId" value="@Model.Price" onchange="$('#btnUpdate_@Model.RegistrationCamperId').show();"/>
+                </div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" value="@Model.Price" id="Price_@Model.RegistrationCamperId" />
+        }
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="btn-toolbar pull-right">
+                @if ((ViewData["hideextra"] == null || Convert.ToBoolean(ViewData["hideextra"]) == false))
+                {
+                    <button id="Ae_@Model.RegistrationCamperId" class="btn btn-primary" type="button" data-toggle="modal" onclick="openExtraActivities('@(Url.Action("ExtraActivities", "ExtraActivities", new {id = Model.RegistrationCamperId}))', @Model.RegistrationCamperId)">Extra Activities</button>
+                }
+                @if (Model.Grade > 0)
+                {
+                    <button class="btn btn-success update" style="display: none"  onclick="updateCamper(@Model.RegistrationCamperId)" id="btnUpdate_@Model.RegistrationCamperId">Update</button>
+                }
+                else
+                {
+                    <button class="btn btn-success update" onclick="updateCamper(@Model.RegistrationCamperId)" id="btnUpdate_@Model.RegistrationCamperId">Update</button>
+                }
+                @if ((ViewData["showremove"] != null && Convert.ToBoolean(ViewData["showremove"]) == true))
+                {
+                    <button class="btn btn-danger" onclick="removeCamper(@Model.CamperId)">Remove</button>
+                }
+                else
+                {
+                    var url = "";
+                    if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Payments")
+                    {
+                        url = Url.Action("Manage", "Payments", new {id = Model.RegistrationId});
+                    }
+                    if (ViewContext.ParentActionViewContext?.RouteData.Values["controller"].ToString() == "Registrations")
+                    {
+                        url = Url.Action("Index", "Registrations", new {id = Model.RegistrationId});
+                    }
+
+                    if ((ViewData["showcancel"] != null && Convert.ToBoolean(ViewData["showcancel"]) == true))
+                    {
+                        <button class="btn btn-danger" type="button" data-url="" data-toggle="modal" onclick="cancelCamper(@Model.CamperId, '@url')">Cancel</button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    @if (Model.CancelledBy != null)
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                <em class="text-xs">Removed by <span class="text-danger" data-userid="@Model.CancelledBy"></span> on <span class="text-danger">@Model.UpdatedDate.ToString("MM/dd/yyyy")</span></em><br />
+                <em class="text-xs">Notes <span class="text-danger">@Model.CancelNotes</span></em>
+            </div>
+        </div>        
+    }
+
+    <!-- Modals -->
+    <div class="modal fade" id="cancelRegistration" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            @using (Html.BeginForm("CancelCamper", "Registrations", FormMethod.Post, new { role = "form"}))
+            {
+                <input type="hidden" name="registrationId" id="cancelRegistrationId" />
+                <input type="hidden" name="camperId" id="cancelCamperId" />
+                <input type="hidden" name="redirectToUrl" id="redirectToUrl" />
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Are you sure you want to cancel ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label">Notes</label>
+                        <textarea name="cancelNotes" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal"><i class="fa fa-mail-reply"></i>&nbsp;No</button>
+                        <button type="submit" class="btn btn-danger">Yes, Cancel</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal fade" id="ea_@Model.RegistrationCamperId" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Extra Activities</h4>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-cid="" class="btn btn-success" data-dismiss="modal">Save and Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,192 @@
+﻿@model CampManagement.Domain.Entities.Registration
+
+@{
+    Layout = null;
+    int camperId = ViewData["camperid"] != null ? (int) ViewData["camperid"] : 0;
+    var i = new Random().Next(1, 100);
+}
+
+<div class="row" id="block_@i">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading text-right bg-light">
+                <ul class="nav nav-tabs pull-left">
+                    <li class="@(0 == camperId ? "active in" : "")">
+                        <a href="#guardian_@(Model.GuardianId.Value)_@i" data-toggle="tab">
+                            <i class="fa fa-user text-default"></i> Guardian                            
+                        </a>
+                    </li>
+                    @if (Model?.Campers != null)
+                    {
+                        foreach (var camper in Model.Campers)
+                        {
+                            <li class="@(camper.CamperId == camperId ? "active in" : "")">
+                                <a href="#camperSetup_@(camper.Camper.CamperId)_@i" data-toggle="tab">
+                                    <i class="fa fa-@(camper.Camper.Gender == "M" ? "male" : "female") text-default"></i> @camper.Camper.FirstName
+                                </a>
+                            </li>
+                        }
+                    }
+                    <li class="">
+                        <a href="#comments_@i" data-toggle="tab">
+                            <i class="fa fa-comments text-default" style="@(Model.Notes != null ? "color: red" : "")"></i> Notes
+                        </a>
+                    </li>
+                </ul>
+                <span class="hidden-sm small text-primary">Tap fields to copy content</span>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div class="tab-pane @(0 == camperId ? "active" : "")" id="guardian_@(Model.GuardianId.Value)_@i">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => Model.Guardian.Name, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => Model.Guardian.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+
+                                </div>
+                            </div>
+                        </div>
+                        @{ Html.RenderPartial("~/Views/Guardians/DetailForms.cshtml", Model.Guardian); }
+                    </div>
+                    @if (Model?.Campers != null)
+                    {
+                        foreach (var camper in Model.Campers)
+                        {
+                            <div class="tab-pane fade @(camper.CamperId == camperId ? "active in" : "")" id="camperSetup_@(camper.Camper.CamperId)_@i">
+                                @{ Html.RenderPartial("~/Views/Campers/DetailForms.cshtml", camper); }
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        @if (Model.CompletedDate != null)
+                                        {
+                                            if (!camper.Registered.HasValue || (!camper.Registered.Value && camper.Cancelled == false))
+                                            {
+                                                <button class="btn btn-warning pull-right btnConfirm" type="button" data-registrationcamperid="@camper.RegistrationCamperId"><i class="fa fa-thumbs-o-up"></i>&nbsp;Confirm Registration</button>
+                                            }
+                                            else
+                                            {
+                                                if (camper.Registered == true)
+                                                {
+                                                    //Camper is correctly registered
+                                                    <a href="#" class="btn btn-white pull-right"><span style="color: green"><i class="fa fa-thumbs-o-up"></i>&nbsp;Registered by <span data-userid="@camper.RegisteredBy"></span> on @camper.UpdatedDate.ToString("d")</span></a>
+                                                }
+                                            }
+
+                                            if (!camper.CancelFinalized.HasValue && camper.Cancelled)
+                                            {
+                                                //Was registred, then canceled but does not have confirmed cancellation yet
+                                                <button class="btn btn-danger pull-right btnCancel" type="button" data-registrationcamperid="@camper.RegistrationCamperId"><i class="fa fa-thumbs-o-down"></i>&nbsp;Confirm Cancellation</button>
+                                            }
+                                            else
+                                            {
+                                                if (camper.CancelFinalized.HasValue)
+                                                {
+                                                    //Registered then canceled...
+                                                    <a href="#" class="btn btn-white pull-right"><span style="color: red"><i class="fa fa-thumbs-o-down"></i>&nbsp;Cancelled by <span data-userid="@camper.CancelledBy"></span> on @camper.UpdatedDate.ToString("d")</span></a>
+                                                }
+                                            }
+                                        }                                        
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="tab-pane fade" id="comments_@i">
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            Model.Notes = Model.Notes + Environment.NewLine;
+                        }
+                        @{
+                            Model.Notes = Model.Notes + DateTime.Now.ToString("ddd, MMM dd") + " (" + ViewData["user"] + ") - ";
+                        }
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <textarea id="comments_@(Model.RegistrationId)_@i" name="comments_@(Model.RegistrationId)" class="form-control" rows="4">@Model.Notes</textarea>        
+                            </div>
+                        </div>                        
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success pull-right" id="btnSaveComments@(Model.RegistrationId)_@i" data-registrationid="@Model.RegistrationId">Save</button>        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#mytable>tbody").find("textarea[readonly]:not([data-clipboard-text]),input:not([data-clipboard-text]),select:not([data-clipboard-text])").each(function () {
+        $(this).attr("data-clipboard-text", $(this).val());
+    });
+
+    $("#btnSaveComments@(Model.RegistrationId)_@i").click(function () {
+        $("textarea[name='comments_@(Model.RegistrationId)']").val($("#comments_@(Model.RegistrationId)_@i").val());
+        $.ajax({
+            url: "@Url.Action("SaveComments","Registrations", new { id = Model.RegistrationId })",
+            method: "POST",
+            data: {
+                notes: $("#comments_@(Model.RegistrationId)_@i").val()
+            },
+            success: function(data) {
+                if (data)
+                    alert("Comments saved.");
+                else
+                    alert("Error when saving comments. Please try again.");
+            },
+            error: function(data) {
+                alert("Error when saving comments. Please try again.");
+            }
+        });
+    });
+
+    $("#block_@i").find(".btnConfirm").click(function () {
+        var result = confirm("Are you sure this registration is confirmed at WoL's website ?");
+        if (result == null || !result) return;
+        var button = $(this);
+        $.ajax({
+            url: "@Url.Action("ConfirmRegistration","Registrations")/" + $(this).data("registrationcamperid"),
+            method: "POST",
+            success: function(data) {
+                if (data) {
+                    alert("Registration confirmed!");
+                    $("#btnEdit" + button.data("registrationcamperid"))
+                        .removeClass("btn-info")
+                        .addClass("btn-success")
+                        .html("<i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed");
+                    var tdClick = $(button).closest("tr").prev().find("td.details-control");
+                    tdClick.trigger("click"); //Closing
+                    tdClick.trigger("click"); //Reopening
+                }
+                else
+                    alert("Error marking this registration as confirmed.");
+            }
+        });
+    });
+
+    $("#block_@i").find(".btnCancel").click(function () {
+        alert($(this).data("registrationcamperid"));
+        var result = confirm("Are you sure this registration is cancelled at WoL's website ?");
+        if (result == null || !result) return;
+        var button = $(this);
+        $.ajax({
+            url: "@Url.Action("ConfirmCancellation", "Registrations")/" + $(this).data("registrationcamperid"),
+            method: "POST",
+            success: function(data) {
+                if (data) {
+                    alert("Registration cancelled!");
+                    var tdClick = $(button).closest("tr").prev().find("td.details-control");
+                    tdClick.trigger("click"); //Closing
+                    tdClick.trigger("click"); //Reopening
+                }
+                else
+                    alert("Error marking this registration as cancelled.");
+            }
+        });
+    });
+
+    $(document).ready(function(){
+        fillUsers();
+    });
+</script>

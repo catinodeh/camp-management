@@ -1,0 +1,76 @@
+﻿@using CampManagement.Web.Models
+@model CampManagement.Domain.Entities.RegistrationCamper
+
+@{
+    var disabled = ViewData["readonly"] != null ? "disabled='disabled'" : "";
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.FirstName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Camper.FirstName, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.LastName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Camper.LastName, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Grade, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Grade, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+        </div>
+    </div>
+    <div class="col-xs-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.Email, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.Email, new {htmlAttributes = new {@class = "form-control", @readonly = ""}})
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.Phone, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.Phone, new {htmlAttributes = new {@class = "form-control", @readonly = ""}})
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.BirthDate, htmlAttributes: new {@class = "control-label"})
+            @Html.EditorFor(model => model.Camper.BirthDate, new {htmlAttributes = new {@class = "form-control", @readonly = "", Value = Model == null || Model.Camper.BirthDate == default(DateTime) ? "" : Model.Camper.BirthDate.ToString("MM/dd/yyyy")}})
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.CabinMates, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Camper.CabinMates, new { htmlAttributes = new { @class = "form-control", @readonly = "" } })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Camper.Limitations, htmlAttributes: new { @class = "control-label" })
+            @Html.TextAreaFor(model => model.Camper.Limitations, htmlAttributes: new { @class = "form-control", @readonly = "" })
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.CampSetupId > 0)
+{
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Extra Activities</label>
+                <textarea class="form-control" id="Extra_@Model.RegistrationCamperId" disabled="disabled"></textarea>
+            </div>
+        </div>
+    </div>
+}

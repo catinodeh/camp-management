@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>NEW LIFE | Camp Management</title>
+    <meta name="description" content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/animate.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font.css")" type="text/css" cache="false" />
+    <link rel="stylesheet" href="@Url.Content("~/css/plugin.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/app.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/fuelux/fuelux.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/loading/loading.css")" type="text/css" />
+    
+
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.js")"></script>
+    <script src="@Url.Content("~/lib/loading/loading.js")"></script>
+
+    <link rel="stylesheet" href="@Url.Content("~/lib/datepicker/datepicker.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/select2/select2.css")" type="text/css" />
+
+    <!-- datepicker -->
+    <script src="@Url.Content("~/lib/datepicker/bootstrap-datepicker.js")"></script>
+    <!-- select2 -->
+    <script src="@Url.Content("~/lib/select2/select2.min.js")" cache="false"></script>
+    <!-- maskedinput -->
+    <script src="@Url.Content("~/lib/maskedinput/jquery.maskedinput.min.js")"></script>
+    <!-- fuelux -->
+    <script src="@Url.Content("~/lib/fuelux/fuelux.js")"></script>
+    <!-- App -->
+    <script src="@Url.Content("~/js/app.js")"></script>
+    <script src="@Url.Content("~/js/site.js")"></script>
+</head>
+<body>
+<section class="vbox">
+    <header class="header bg-black navbar navbar-inverse pull-in">
+        <div class="navbar-header nav-bar aside dk">
+            <a class="btn btn-link visible-xs" data-toggle="class:show" data-target=".nav-primary">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="nav-brand" data-toggle="fullscreen"><img src="@Url.Content("~/images/mylogo.png")"></a>
+            <a class="btn btn-link visible-xs" data-toggle="collapse" data-target=".navbar-collapse">
+                <i class="fa fa-user"></i>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    @Html.Partial("_LoginPartial")
+                </li>
+            </ul>
+        </div>
+    </header>
+    <section>
+        <section class="hbox stretch">
+            <aside class="aside bg-dark nav-vertical" id="nav">
+                <section class="vbox">
+                    <section>
+                        <nav class="nav-primary hidden-xs">
+                            @Html.Partial("_Menu")
+                        </nav>
+                    </section>
+                    <footer class="footer bg-gradient hidden-xs">
+                        <a href="#nav" data-toggle="class:nav-vertical" class="btn btn-sm btn-link m-l-n-sm">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </footer>
+                </section>
+            </aside>
+            <section>
+                <section class="vbox">
+                    <section class="scrollable">
+                        <div class="header b-b bg-white-only">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h4 class="m-t m-b-none">@Html.Raw(ViewBag.Title) </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wrapper">
+                            @RenderBody()
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+</section>
+    <!-- Button trigger modal -->
+    <script type="text/javascript">
+        function fillUsers() {
+            $("span[data-userid]").each(function () {
+                var span = $(this);
+                $.get("@Url.Action("GetUserNameById", "Account")/" + $(this).data("userid"), function (data) {
+                    span.html(data);
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            $("body").on("click", "i[data-guardianid].fa-exclamation-circle", function () {
+                if (confirm("Do you want to send a confirmation email to this Guardian ?")) {
+                    $.ajax({
+                        method: "POST",
+                        url: "@Url.Action("SendConfirmationEmail", "Guardians")/" + $(this).data("guardianid"),
+                        success: function(data) {
+                            alert(data ? "Success!" : "Error! :-(");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+    
+</body>
+</html>

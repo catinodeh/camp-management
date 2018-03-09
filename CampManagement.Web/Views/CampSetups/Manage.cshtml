@@ -1,0 +1,179 @@
+﻿@model IEnumerable<CampManagement.Domain.Entities.CampSetup>
+
+@{
+    ViewBag.Title = ViewData["CampName"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool[] firsts = new []{ true, true };
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <section class="panel">
+            <header class="panel-heading bg-light">
+                <ul class="nav nav-tabs nav-justified">
+                    @if (!Model.Any(cs => cs.Year == DateTime.Now.Year)) { 
+                        <li class="active">
+                            <a href="#cs_@DateTime.Now.Year" data-toggle="tab">@DateTime.Now.Year</a>
+                        </li>
+                        firsts[0] = false;
+                    }
+
+                    @foreach (var campSetup in Model)
+                    {                        
+                        <li class="@(firsts[0] ? "active" : "")">
+                            <a href="#cs_@campSetup.Year" data-toggle="tab">@campSetup.Year</a>
+                        </li>
+                        firsts[0] = false;
+                    }
+                </ul>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content">
+                    @if (!Model.Any(cs => cs.Year == DateTime.Now.Year))
+                    {
+                        <div class="tab-pane active" id="cs_@DateTime.Now.Year">
+                            @{ Html.RenderAction("Create", "CampSetups", Model.FirstOrDefault(cs => cs.Year == DateTime.Now.Year)); }
+                        </div>
+                        firsts[1] = false;
+                    }
+                    
+                    @foreach (var campSetup in Model)
+                    {
+                        <div class="tab-pane @(firsts[1] ? "active" : "")" id="cs_@campSetup.Year">                            
+                            @{ Html.RenderAction("Create", "CampSetups", campSetup); }
+                        </div>
+                        firsts[1] = false;
+                    }
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script src="@Url.Content("~/lib/moment/moment.min.js")"></script>
+<script type="text/javascript">
+    function refreshActivities(campsetupid) {
+        $.ajax({
+            url: '@Url.Action("Index", "ExtraActivities", new { id = Model.FirstOrDefault()?.CampSetupId })',
+            cache: false,
+            // url where to submit the request
+            type: "GET", // type of action POST || GET
+            success: function(data, status, xhr, dataType) {
+                $("#ea@(Model.FirstOrDefault()?.CampSetupId)").empty().html(data);
+            },
+            error: function(xhr, resp, text) {
+                console.log(xhr, resp, text);
+            }
+        });
+    }
+    $(document)
+        .ready(function () {
+            //$("#frm .datepicker-input").datepicker();
+            //$("#frm .datepicker-input").on('changeDate', function (ev) {
+            //    $(this).datepicker('hide');
+            //});
+
+            $("#frm").find(".datepicker-input").each(function () {
+                $(this).datepicker({ dateFormat: 'mm/dd/yyyy' });
+                $(this).focus(function () {
+                    $(this).datepicker("show");
+                });
+
+                $(this).on('keydown', function (e) {
+                    var keyCode = e.keyCode || e.which;
+
+                    if (keyCode == 9) {
+                        //e.preventDefault(); 
+                        $(this).datepicker("hide");
+                    }
+                });
+
+                $(this).on('changeDate', function (ev) {
+                    $(this).datepicker('hide');
+                    //$($(this).attr("id").replace("StartDay", "#FromGrade").replace("EndDay", "#FromGrade")).focus();
+                    if ($(this).attr("id") === "StartDay" && $("#EndDay").val() === "") {
+                        $("#EndDay").val(moment($("#StartDay").val(), "MM/DD/YYYY").add(7, 'days').format("MM/DD/YYYY"));
+                        $("#EndDay").datepicker('update', $("#EndDay").val());
+                        $("#EndDay").focus();
+                    }
+                });
+            });
+
+            $("div.tab-pane").slice(1).find("input").prop("disabled", true);
+            $("div.tab-pane").slice(1).find("button,a").hide();
+
+            $("#btnAddExtraActivity")
+                .click(function () {
+                    @if (Model == null || Model.Count() == 0 || Model.FirstOrDefault()?.CampSetupId == 0)
+                    {
+                        <text>
+                            alert('Save this setup first');
+                            return;
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            var campsetupid = @(Model.FirstOrDefault()?.CampSetupId ?? 0);
+                            $.ajax({
+                                url: '@Url.Action("Create", "ExtraActivities")/'+ campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                data: $("#frmAddExtraActivity").serialize(), // post data || get data
+                                success: function(data, status, xhr, dataType) {
+                                    if (data.Success)
+                                        refreshActivities(campsetupid);
+                                    else
+                                        alert(data.Message);
+                                },
+                                error: function(xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        </text>
+                    }
+
+                });
+
+            $("body").on("click", "a[rel='lkSave']",
+                    function(e) {
+                        e.preventDefault();
+                        var campsetupid = $(this).attr("title");
+                        if ($(this).hasClass("btn-info")) {
+                            //Saving
+                            $.ajax({
+                                url: '@Url.Action("Edit", "ExtraActivities")/' + campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                data: {
+                                    Description: $("#desc" + $(this).attr("title")).val(),
+                                    Price: $("#price" + $(this).attr("title")).val()
+                                }, // post data || get data
+                                success: function (result) {
+                                    if (result.Success)
+                                        alert("Success");
+                                    else
+                                        alert(result.Message);
+                                },
+                                error: function(xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        }
+                        else {
+                            //Removing...
+                            $.ajax({
+                                url: '@Url.Action("Delete", "ExtraActivities")/' + campsetupid,
+                                // url where to submit the request
+                                type: "POST", // type of action POST || GET
+                                success: function (result) {
+                                    refreshActivities(campsetupid);
+                                },
+                                error: function (xhr, resp, text) {
+                                    console.log(xhr, resp, text);
+                                }
+                            });
+                        }
+                    });
+        });
+</script>

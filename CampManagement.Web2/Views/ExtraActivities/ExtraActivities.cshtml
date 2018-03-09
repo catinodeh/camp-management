@@ -1,0 +1,30 @@
+﻿@model CampManagement.Domain.Entities.UserActivity
+@{
+    Layout = null;
+}
+
+@if (Model.ExtraActivities.Count > 0)
+{
+    foreach (var extraActivity in Model.ExtraActivities)
+    {
+        <div class="row">
+            <div class="col-xs-10">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" @(Model.CamperExtraActivities.Any(e => e.ActivityId == extraActivity.ActivityId) ? "checked='checked'" : "") value="@extraActivity.ActivityId">@extraActivity.Description
+                    </label>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="checkbox">
+                    @(Model.CamperExtraActivities.Any(e => e.ActivityId == extraActivity.ActivityId) ? Model.ExtraActivities.FirstOrDefault(e => e.ActivityId == extraActivity.ActivityId).Price.ToString("C") : extraActivity.Price.ToString("C"))
+                </div>
+            </div>
+        </div>
+
+    }
+}
+else
+{
+    <text>There is no extra activity configured for this Camp</text>
+}

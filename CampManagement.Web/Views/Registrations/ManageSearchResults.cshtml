@@ -1,0 +1,140 @@
+﻿@using System.Text.RegularExpressions
+@model IEnumerable<CampManagement.Web.Models.RegistrationSearchModel>
+
+@{
+    Layout = null;
+}
+
+@{
+    int lastGuardianId = 0;
+
+    @functions
+    {
+        public string Highlight(string word)
+        {
+            string criteria = ViewBag.criteria;
+            string result = word;
+            if (criteria == null) return word;
+
+            foreach (var c in criteria.Split(' '))
+            {
+                result = Regex.Replace(result, c, delegate (Match match)
+                {
+                    string v = match.ToString();
+                    return $"<b>{v}</b>";
+                }, RegexOptions.IgnoreCase);
+            }
+
+            return result;
+        }
+    }
+}
+
+<section class="comment-list block">
+    @foreach (var searchModel in Model.Where(s => s.ResultType == 1))
+    {
+        if (lastGuardianId != searchModel.GuardianId)
+        {
+            <article class="comment-item">
+                <a class="pull-left thumb-sm avatar">
+                    <i class="fa fa-user" style="font-size: 38px;"></i>
+                </a> 
+                <span class="arrow left"></span> 
+                <section class="comment-body panel">
+                    <header class="panel-heading">
+                        <a href="#">@Html.Raw(Highlight(searchModel.GuardianName))</a>
+                        <label class="label bg-info m-l-xs">@Html.Raw(Highlight(searchModel.GuardianPhone))</label>
+                        <div class="btn-group pull-right">
+                            <button class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown">Add &nbsp;<span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" rel="addguardian" data-guardianid="@searchModel.GuardianId">Guardian and Campers</a></li>
+                                <li><a href="#" rel="addguardianonly" data-guardianid="@searchModel.GuardianId">Guardian Only</a></li>
+                            </ul>
+                        </div>
+                    </header>
+                </section>
+            </article> 
+            <!-- Camper -->
+            <article class="comment-item comment-reply">
+                <a class="pull-left thumb-sm avatar">
+                    <i class="fa fa-@(searchModel.CamperGender == "M" ? "male" : "female")" style="font-size: 38px;"></i>
+                </a>
+                <span class="arrow left"></span>
+                <section class="comment-body panel text-sm">
+                    <div class="panel-body">
+                        <a href="#">@Html.Raw(Highlight(searchModel.CamperName))</a> 
+                        <label class="label bg-dark m-l-xs">@(searchModel.CamperBirthDate?.ToString("MM/dd/yyyy") ?? "")</label> 
+                        <div class="btn-group pull-right">
+                            <a href="#" class="btn btn-rounded btn-xs btn-default" rel="addcamper" data-guardianid="@searchModel.GuardianId" data-camperid="@searchModel.CamperId">
+                                Add
+                            </a>    
+                        </div>
+                    </div>
+                </section>
+            </article>
+        }
+        else
+        {
+            <!-- Camper -->
+            <article class="comment-item comment-reply">
+                <a class="pull-left thumb-sm avatar">
+                    <i class="fa fa-@(searchModel.CamperGender == "M" ? "male" : "female")" style="font-size: 38px;"></i>
+                </a>
+                <span class="arrow left"></span>
+                <section class="comment-body panel text-sm">
+                    <div class="panel-body">
+                        <a href="#">@Html.Raw(Highlight(searchModel.CamperName))</a>
+                        <label class="label bg-dark m-l-xs">@(searchModel.CamperBirthDate?.ToString("MM/dd/yyyy") ?? "")</label>
+                        <div class="btn-group pull-right">
+                            <a href="#" class="btn btn-rounded btn-xs btn-default" rel="addcamper" data-guardianid="@searchModel.GuardianId" data-camperid="@searchModel.CamperId">
+                                Add
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        }
+        if (searchModel.GuardianId != null)
+        {
+            lastGuardianId = searchModel.GuardianId.Value;
+        }
+    }
+    @foreach (var searchModel in Model.Where(s => s.ResultType == 2))
+    {
+        <article class="comment-item">
+            <a class="pull-left thumb-sm avatar">
+                <i class="fa fa-user" style="font-size: 38px;"></i>
+            </a> 
+            <span class="arrow left"></span> <section class="comment-body panel">
+                <header class="panel-heading">
+                    <a href="#">@Html.Raw(Highlight(searchModel.GuardianName))</a>
+                    <label class="label bg-info m-l-xs">@Html.Raw(Highlight(searchModel.GuardianPhone))</label>
+                    <div class="btn-group pull-right">
+                        <a href="#" class="btn btn-rounded btn-xs btn-info" rel="addguardianonly" data-guardianid="@searchModel.GuardianId">Add</a>
+                    </div>
+                </header>
+            </section>
+        </article>
+    }
+    @foreach (var searchModel in Model.Where(s => s.ResultType == 3))
+    {
+        <article id="comment-id-1" class="comment-item">
+            <a class="pull-left thumb-sm avatar">
+                <i class="fa fa-@(searchModel.CamperGender == "M" ? "male" : "female")" style="font-size: 38px;"></i>
+            </a> <span class="arrow left"></span> <section class="comment-body panel">
+                <header class="panel-heading">
+                    <a href="#">@Html.Raw(Highlight(searchModel.CamperName))</a>
+                    <label class="label bg-info m-l-xs">@(searchModel.CamperBirthDate?.ToString("MM/dd/yyyy") ?? "")</label>
+                    <div class="btn-group pull-right">
+                        <a href="#" class="btn btn-rounded btn-xs btn-default" rel="addcamper" data-camperid="@searchModel.CamperId">Add</a>
+                    </div>
+                </header>
+            </section>
+        </article>
+    }
+</section>
+
+<div class="pull-right">
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Manage", "Guardians", new {autoclose = "1", name = ViewBag.criteria })" target="_blank"><i class="fa fa-user"></i>&nbsp;New Guardian</a>
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Manage", "Campers", new {autoclose = "1", name = ViewBag.criteria })" target="_blank"><i class="fa fa-male"></i>&nbsp;<i class="fa fa-female"></i>&nbsp;New Camper</a>    
+</div>

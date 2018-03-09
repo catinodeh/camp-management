@@ -1,0 +1,114 @@
+﻿@model CampManagement.Domain.Identity.RegisterViewModel
+@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "<i class='fa fa-lock'></i>&nbsp;User Management";
+}
+
+<div class="row">
+    <div class="col-sm-5">
+        <section class="panel">
+            <header class="panel-heading font-bold">@Html.Raw(Model?.Id == null ? "New User" : "Update User")</header>
+            <div class="panel-body">
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label>Username</label>
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label>Email address</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = Model?.Id != null ? "Only if you want to change" : "" })
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = Model?.Id != null ? "Only if you want to change" : "" })
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2" style="padding-left: 0px">Group</label>
+                        <div class="col-sm-10">
+                            <div class="radio">
+                                <label>
+                                    <input name="RoleName" type="radio" value="Administrators" id="Administrator" @(Model?.RoleName == "Administrators" ? "checked='checked'" : "") /> Administrator
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input name="RoleName" type="radio" value="Users" id="User" @(Model?.RoleName == "Users" ? "checked='checked'" : "") /> User
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    if (Model?.Id != null)
+                    {
+                        <div class="form-group">
+                            <label>
+                                @Html.EditorFor(model => model.Active) Active&nbsp;?
+                            </label>
+                        </div>
+                    }
+
+                    if (String.IsNullOrEmpty(Model?.Id))
+                    {
+                        <button type="submit" class="btn btn-default pull-right">
+                            <i class="fa fa-save text"></i>
+                            Create
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="pull-right">
+                            <a href="@Url.Action("Register","Account", new { id = "" })" class="btn btn-info btn-back" style="margin-right: 5px"><i class="fa fa-reply text"></i> Back</a>
+                            <button type="submit" class="btn btn-success pull-right">
+                                <i class="fa fa-save text"></i>
+                                Save
+                            </button>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-7">
+        <section class="panel">
+            <header class="panel-heading font-bold">
+                <ul class="nav nav-pills pull-right">
+                    <li>
+                        <a href="#" class="panel-toggle text-muted active">
+                            <i class="fa fa-caret-down text-active"></i>
+                            <i class="fa fa-caret-up text"></i>
+                        </a>
+                    </li>
+                </ul>
+                Existing Users
+            </header>
+            <section class="panel-body">
+                @{
+                    foreach (var item in (List<CampManagement.Domain.Identity.RegisterViewModel>)ViewData["users"])
+                    {
+                        <div class="media">
+                            <span class="pull-left thumb-sm"><img src="@Url.Content("~/images/avatar_default.jpg")" alt="@item.UserName" class="img-circle"></span>
+                            <div class="pull-right text-success m-t-sm">
+                                @if (item.UserName != "Administrator")
+                                {
+                                    <a href="@Url.Action("Register","Account", new { id = @item.Id })" class="btn btn-@(item.Active ? "info" : "danger") btn-sm btn-rounded">Edit</a>
+                                }
+                            </div>
+                            <div class="media-body">
+                                <div><a href="#">@item.UserName</a></div>
+                                <small class="text-muted">
+                                    @item.RoleName
+                                </small>
+                            </div>
+                        </div>
+                    }
+                }
+            </section>
+        </section>
+    </div>
+</div>

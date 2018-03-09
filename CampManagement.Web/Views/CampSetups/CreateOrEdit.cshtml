@@ -1,0 +1,132 @@
+﻿@model CampManagement.Domain.Entities.CampSetup
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-sm-4">
+        <section class="panel">
+            <div class="panel-body">
+                @using (Html.BeginForm("CreateOrEdit", "CampSetups", FormMethod.Post, new { @class = "", role = "form", id = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CreatedDate)
+                    <input type="hidden" name="Year" id="Year" value="@(Model == null ? DateTime.Now.Year : Model.Year)" />
+                    <input type="hidden" name="CampId" id="CampId" value="@Url.RequestContext.RouteData.Values["id"].ToString()" />
+
+                    @Html.HiddenFor(model => model.CreatedBy)
+                    @Html.HiddenFor(model => model.CampSetupId)
+                    if (Model != null)
+                    {
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    }
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.CurrentPrice, htmlAttributes: new { @class = "" })
+                            @Html.EditorFor(model => model.CurrentPrice, new { htmlAttributes = new { @class = "form-control", placeholder = "Price in U$", Value = Model == null || Model.CurrentPrice == 0 ? "" : Model.CurrentPrice.ToString("F") } })
+                        </div>
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.Spaces, htmlAttributes: new { @class = "" })
+                            @Html.EditorFor(model => model.Spaces, new { htmlAttributes = new { @class = "form-control", placeholder = "Spots available", Value = (Model == null || Model.Spaces == 0 ? "" : Model.Spaces.ToString()) } })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.StartDay, htmlAttributes: new { @class = "" })
+                            @if (Model == null || Model.StartDay == default(DateTime))
+                            {
+                                @Html.EditorFor(model => model.StartDay, new { htmlAttributes = new { @class = "input-sm datepicker-input form-control form-date", Value = "", placeholder = "MM/DD/YYYY" } })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.StartDay, new { htmlAttributes = new { @class = "input-sm datepicker-input form-control form-date", Value = Model.StartDay.ToString("MM/dd/yyyy"), placeholder = "MM/DD/YYYY" } })
+                            }
+                        </div>
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.EndDay, htmlAttributes: new { @class = "" })
+                            @if (Model == null || Model.EndDay == default(DateTime))
+                            {
+                                @Html.EditorFor(model => model.EndDay, new { htmlAttributes = new { @class = "input-sm datepicker-input form-control form-date", Value = "", placeholder = "MM/DD/YYYY" } })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.EndDay, new { htmlAttributes = new { @class = "input-sm datepicker-input form-control form-date", Value = Model.EndDay.ToString("MM/dd/yyyy"), placeholder = "MM/DD/YYYY" } })
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.FromGrade, htmlAttributes: new { @class = "" })
+                            @Html.EditorFor(model => model.FromGrade, new { htmlAttributes = new { @class = "form-control", placeholder = "From this Grade", Value = Model == null || Model.FromGrade == 0 ? "" : Model.FromGrade.ToString() } })
+                        </div>
+                        <div class="col-xs-6">
+                            @Html.LabelFor(model => model.ToGrade, htmlAttributes: new { @class = "" })
+                            @Html.EditorFor(model => model.ToGrade, new { htmlAttributes = new { @class = "form-control", placeholder = "To this Grade", Value = Model == null || Model.ToGrade == 0 ? "" : Model.ToGrade.ToString() } })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" style="padding-top: 10px">
+                            <div class="pull-right">
+                                <a href="@Url.Action("Edit", "Camps", new {id = Url.RequestContext.RouteData.Values["id"] })" class="btn btn-info btn-back" style="margin-right: 5px"><i class="fa fa-reply text"></i> Back</a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-save text"></i>
+                                    @((Model == null || Model.CampSetupId == 0) ? "Create" : "Save")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-8">
+        @if (Model == null || Model.Year == DateTime.Now.Year)
+        {
+            <section class="panel">
+                <header class="panel-heading font-bold">Add Extra Activities</header>
+                <div class="panel-body">
+                    @*<form class="bs-example form-horizontal">*@
+                    @using (Html.BeginForm("CreateOrEdit", "CampSetups", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "frmAddExtraActivity" }))
+                    {
+                        <input type="hidden" name="CampSetupId" value="@(Model?.CampSetupId ?? 0)"/>    
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Description</label>
+                            <div class="col-lg-5">
+                                <input type="text" class="form-control" placeholder="Ex.: Kayaking, Water Skiing" name="Description">
+                            </div>
+                            <label class="col-lg-1 control-label">Price</label>
+                            <div class="col-lg-2">
+                                <input type="number" class="form-control" placeholder="US$" name="Price">
+                            </div>
+                            <div class="col-lg-2">
+                                <input type="button" class="btn btn-sm btn-default" id="btnAddExtraActivity" value="Add" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        }        
+        <section class="panel" id="ea@(Model?.CampSetupId ?? 0)">
+            <header class="panel-heading font-bold">Extra Activities</header>
+            @if (Model?.Year == DateTime.Now.Year)
+            {
+                Html.RenderAction("Index", "ExtraActivities", new {id = Model?.CampSetupId ?? 0});
+            }
+            else
+            {
+                Html.RenderAction("Index", "ExtraActivities", new { id = Model?.CampSetupId ?? 0, readOnly = true });
+            }
+        </section>
+    </div>
+</div>
+
+<script language="javascript">
+    $(document)
+        .ready(function() {
+            
+        });
+</script>

@@ -1,0 +1,78 @@
+﻿@model CampManagement.Domain.Entities.Camp
+
+
+@{
+    ViewBag.Title = "<i class='fa fa-calendar'></i>&nbsp;Camp Management";
+}
+
+<div class="row">
+    <div class="col-sm-6">
+        <section class="panel">
+            <header class="panel-heading font-bold">@Html.Raw(Model == null || Model.CampId == 0 ? "New" : "Edit") Camp</header>
+            <div class="panel-body">
+                @using (Html.BeginForm(Model == null || Model.CampId == 0 ? "Create" : "Edit", "Camps", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CreatedDate)
+                    @Html.HiddenFor(model => model.CreatedBy)
+                    @Html.HiddenFor(model => model.CampId)
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "" })
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                    if (Model == null || Model.CampId == 0)
+                    {
+                        <button type="submit" class="btn btn-default pull-right">
+                            <i class="fa fa-save text"></i>
+                            Create
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="pull-right">
+                            <a href="@Url.Action("Create","Camps", new { id = "" })" class="btn btn-info btn-back" style="margin-right: 5px"><i class="fa fa-reply text"></i> Back</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save text"></i>
+                                Save
+                            </button>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-6">
+        <section class="panel">
+            <header class="panel-heading font-bold">Existing Camps</header>
+            <table class="table table-striped m-b-none text-sm">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th width="150"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        foreach (var item in (List<CampManagement.Domain.Entities.Camp>)ViewData["data"])
+                        {
+                            <tr>
+                                <td style="padding-top: 11px">@item.Name</td>
+                                <td class="text-success">
+                                    <div class='btn-group btn-group-justified'>
+                                        <p style='margin: 0px'>
+                                            <a href="@Url.Action("Edit", "Camps", new {id = @item.CampId})" class="btn btn-info btn-sm btn-rounded">Edit</a>&nbsp;
+                                            <a href="@Url.Action("Manage", "CampSetups", new {id = @item.CampId})" class="btn btn-default btn-sm btn-rounded">Setup</a>
+                                        </p>
+                                    </div>
+                                           
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
