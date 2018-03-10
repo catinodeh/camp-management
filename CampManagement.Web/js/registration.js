@@ -98,8 +98,8 @@ function removeCamper(camperid) {
 }
 
 function updateCamper(registrationCamperId) {
-    var result = confirm("Are you sure you want to update this camper's info?");
-    if (result == null || !result) return;
+    //var result = confirm("Are you sure you want to update this camper's info?");
+    //if (result == null || !result) return;
 
     var obj = {
         Grade: $("#Grade_" + registrationCamperId).val(),
