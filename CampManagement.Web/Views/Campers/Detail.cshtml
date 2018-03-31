@@ -44,7 +44,7 @@
         <div class="col-xs-@(User.IsInRole("Administrators") ? "6" : "8")">
             <div class="form-group">
                 <label class="control-label">Camp</label>
-                <select @disabled class="form-control" onchange="$('#btnUpdate_@Model.RegistrationCamperId').show(); $('#Ae_@Model.RegistrationCamperId').prop('disabled', true);" id="CampSetupId_@Model.RegistrationCamperId">
+                <select @disabled class="form-control" onchange="$('#btnUpdate_@Model.RegistrationCamperId').show(); $('#Ae_@Model.RegistrationCamperId').prop('disabled', true); $('#Price_@Model.RegistrationCamperId').val($('#CampSetupId_@Model.RegistrationCamperId').find(':selected').data('price'));" id="CampSetupId_@Model.RegistrationCamperId">
                     @{
                         using (var db = new CampManagement.Data.CampManagementDbContext())
                         {
@@ -62,7 +62,7 @@
                                 }).ToList();
                             foreach (var availableCamps in camps)
                             {
-                                <option value="@availableCamps.CampSetupId" @(Model.CampSetupId == availableCamps.CampSetupId ? "selected=selected" : "")>@availableCamps.Description (@($"{availableCamps.FromGrade}th/{availableCamps.ToGrade}th")) @availableCamps.Price.ToString("C")</option>
+                                <option data-price="@availableCamps.Price.ToString("F")" value="@availableCamps.CampSetupId" @(Model.CampSetupId == availableCamps.CampSetupId ? "selected=selected" : "")>@availableCamps.Description (@($"{availableCamps.FromGrade}th/{availableCamps.ToGrade}th")) @availableCamps.Price.ToString("C")</option>
                             }
                         }
                     }
