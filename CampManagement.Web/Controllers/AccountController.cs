@@ -205,6 +205,20 @@ namespace CampManagement.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> Disable(string id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                var user = await UserManager.FindByIdAsync(id);
+                user.LockoutEndDateUtc = DateTime.MaxValue;
+                await UserManager.UpdateAsync(user);
+            }
+
+            return RedirectToAction("Register");
+        }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]

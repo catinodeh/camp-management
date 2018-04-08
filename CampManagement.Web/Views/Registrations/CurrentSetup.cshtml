@@ -108,11 +108,11 @@
                                         if (Model.GuardianId.HasValue && Model.Campers.Any())
                                         {
                                             <a class="btn navbar-btn btn-default validategrade" href="@Url.Action("Finish", new {id = Model?.RegistrationId})">Finish</a>
-                                            <a class="btn navbar-btn btn-success validategrade" href="@Url.Action("FinishAndPay", new {id = Model?.RegistrationId})"><i class="fa fa-dollar"></i>&nbsp;Finish & Pay</a>
+                                            <a class="btn navbar-btn btn-success validategrade" href="@Url.Action("FinishAndPay", new {id = Model?.RegistrationId})"><i class="fa fa-dollar"></i>&nbsp;Save & Pay</a>
                                         }
                                         else
                                         {
-                                            <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Back</a>
+                                            <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Cancel</a>
                                         }
                                     }
                                     else
@@ -122,7 +122,7 @@
                                 }
                                 else
                                 {
-                                    <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Back</a>
+                                    <a class="btn navbar-btn btn-info" href="@Url.Action("Index", "Registrations")"><i class="fa fa-mail-reply"></i>&nbsp;Cancel</a>
                                     <a class="btn navbar-btn btn-success" href="@Url.Action("Index", "Registrations", new { id = Model.RegistrationId })"><i class="fa fa-edit"></i>&nbsp;Edit</a>
                                 }
                             </p>

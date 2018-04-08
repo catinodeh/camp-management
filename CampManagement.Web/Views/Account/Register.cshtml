@@ -55,7 +55,7 @@
 
                     if (String.IsNullOrEmpty(Model?.Id))
                     {
-                        <button type="submit" class="btn btn-default pull-right">
+                        <button type="submit" class="btn btn-success pull-right">
                             <i class="fa fa-save text"></i>
                             Create
                         </button>
@@ -94,10 +94,16 @@
                         <div class="media">
                             <span class="pull-left thumb-sm"><img src="@Url.Content("~/images/avatar_default.jpg")" alt="@item.UserName" class="img-circle"></span>
                             <div class="pull-right text-success m-t-sm">
+                                
                                 @if (item.UserName != "Administrator")
                                 {
-                                    <a href="@Url.Action("Register","Account", new { id = @item.Id })" class="btn btn-@(item.Active ? "info" : "danger") btn-sm btn-rounded">Edit</a>
+                                     if (item.Active)
+                                     {
+                                         <a href="@Url.Action("Disable","Account", new { id = @item.Id })" class="btn btn-warning btn-sm btn-rounded">Disable</a>
+                                     }
+                                    <a href="@Url.Action("Register","Account", new { id = @item.Id })" class="btn btn-info btn-sm btn-rounded">Edit</a>
                                 }
+                                
                             </div>
                             <div class="media-body">
                                 <div><a href="#">@item.UserName</a></div>

@@ -355,7 +355,7 @@ namespace CampManagement.Web.Controllers
                 if (registrationCamper != null)
                     return Json(new DefaultJsonReturn() { Success = false, Message = "Camper already added to this registration!" });
 
-                if (db.RegistrationCampers.Any(c => c.CamperId == camperId && c.RegistrationId != registrationId && c.CreatedDate.Year == DateTime.Now.Year))
+                if (db.RegistrationCampers.Any(c => c.CamperId == camperId && c.RegistrationId != registrationId && c.CreatedDate.Year == DateTime.Now.Year && !c.Cancelled))
                     return Json(new DefaultJsonReturn() { Success = false, Message = "Camper is already in another registration!" });
 
                 //Searching for previous grade and adding +1

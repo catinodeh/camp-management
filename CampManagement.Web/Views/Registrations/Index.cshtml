@@ -160,13 +160,15 @@
 
                                 total = (row.TotalRegistration + row.TotalActivities);
                                 if (["filter", "sort", "type"].indexOf(type) > -1) {
-                                    if (row.Cancelled) return -1;
+                                    if (row.Cancelled) return -1;   
                                     if (row.CompletedDate == null || (total - row.TotalPayments == 0)) return 0;
                                     if (total - row.TotalPayments > 0) return total - row.TotalPayments;
                                     return row.TotalRegistration;
                                 }
                                 if (row.CompletedDate == null) return "<span title='Not yet finished' style='cursor: help; color:red'><i class='fa fa-exclamation'></i>&nbsp;N/F</span>";
-                                if (row.Cancelled) return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
+                                if (row.Cancelled) {
+                                    return "<a class='balance' title='Reg. Total/Paid' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$')  + "</a>";
+                                }
                                 if (total - row.TotalPayments > 0)
                                     return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>" + format2(total - row.TotalPayments, '$') + "</a>";
                                 return "<a class='balance' href='@Url.Action("Manage", "Payments")/" + row.RegistrationId + "'>Paid</a>";
@@ -180,7 +182,6 @@
                                     return "<button type='button' class='btn btn-danger btn-sm'><i class='fa fa-thumbs-o-down'></i>&nbsp;Cancelled</button>";
                                 }
                                 if (row.Registered) {
-                                    //return "<button type='button' class='btn btn-success btn-sm'><i class='fa fa-thumbs-o-up'></i>&nbsp;Confirmed</button>";
                                     return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-success btn-sm'>Edit</a>";
                                 }
                                 return "<a id='btnEdit" + row.RegistrationCamperId + "' href='@Url.Action("Index", "Registrations", new {id = ""})/Index/" + row.RegistrationId + "' class='btn btn-info btn-sm btn-rounded'>Edit</a>";
